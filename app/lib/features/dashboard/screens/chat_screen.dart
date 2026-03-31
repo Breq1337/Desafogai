@@ -43,17 +43,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (msg.contains('timeout') || msg.contains('expirou')) {
       return 'A resposta demorou demais. Tente novamente com uma pergunta mais curta.';
     }
-    if (msg.contains('conexão') || msg.contains('connection') || msg.contains('internet')) {
+    if (msg.contains('conexão') || msg.contains('connection') || msg.contains('internet') || msg.contains('socketexception')) {
       return 'Sem conexão com o servidor. Verifique sua internet e tente novamente.';
     }
-    if (msg.contains('login') || msg.contains('401') || msg.contains('sessão')) {
+    if (msg.contains('login') || msg.contains('401') || msg.contains('sessão') || msg.contains('invalid_token')) {
       return 'Sua sessão expirou. Feche e abra o app para fazer login novamente.';
     }
-    if (msg.contains('429') || msg.contains('limite')) {
+    if (msg.contains('429') || msg.contains('limite') || msg.contains('rate_limited')) {
       return 'Muitas perguntas seguidas. Aguarde alguns segundos e tente novamente.';
+    }
+    if (msg.contains('ai_unconfigured') || msg.contains('ai_key_invalid')) {
+      return 'O serviço de IA não está configurado no servidor. Verifique a GEMINI_API_KEY nas variáveis do Vercel.';
+    }
+    if (msg.contains('ai_models_unavailable')) {
+      return 'Nenhum modelo de IA disponível no momento. Verifique se a chave Gemini está ativa no Google AI Studio.';
     }
     if (msg.contains('indisponível') || msg.contains('503') || msg.contains('502')) {
       return 'O assistente está temporariamente indisponível. Tente novamente em instantes.';
+    }
+    if (msg.contains('url') && msg.contains('não configurada')) {
+      return 'O servidor da IA não está configurado. Defina DESAFOG_API_BASE_URL no .env do app.';
     }
     return 'Desculpe, tive um problema ao responder. Tente novamente mais tarde.';
   }
@@ -169,7 +178,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final backendOk = ref.watch(desafogAiBackendConfiguredProvider);
     final String? backendError = backendOk
         ? null
-        : 'Assistente indisponível — servidor não configurado.';
+        : 'Assistente indisponível — configure DESAFOG_API_BASE_URL no .env apontando para o deploy do bot Vercel.';
 
     final isInitialState = _messages.isEmpty;
     final chatContext = _buildChatContext();

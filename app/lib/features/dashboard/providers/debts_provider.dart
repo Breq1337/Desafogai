@@ -51,35 +51,3 @@ final nextPaymentProvider = FutureProvider<Debt?>((ref) async {
   return debts.first;
 });
 
-// Mock data for onboarding/demo
-final mockDebtsProvider = StateProvider<List<Debt>>((ref) {
-  return [
-    Debt(
-      id: '1',
-      creditor: 'Banco XYZ',
-      amount: 5000,
-      interestRate: 3.5,
-      minimumPayment: 150,
-      dueDate: DateTime.now().add(const Duration(days: 5)),
-      createdAt: DateTime.now().subtract(const Duration(days: 30)),
-    ),
-    Debt(
-      id: '2',
-      creditor: 'Cartão Crédito',
-      amount: 2300,
-      interestRate: 5.2,
-      minimumPayment: 100,
-      dueDate: DateTime.now().add(const Duration(days: 15)),
-      createdAt: DateTime.now().subtract(const Duration(days: 60)),
-    ),
-    Debt(
-      id: '3',
-      creditor: 'Financiamento',
-      amount: 8500,
-      interestRate: 1.8,
-      minimumPayment: 350,
-      dueDate: DateTime.now().add(const Duration(days: 25)),
-      createdAt: DateTime.now().subtract(const Duration(days: 120)),
-    ),
-  ];
-});

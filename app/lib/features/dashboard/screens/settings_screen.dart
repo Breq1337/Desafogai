@@ -399,125 +399,223 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Widget _buildTelegramCard() {
-    return SettingsCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    return FutureBuilder<bool>(
+      future: TelegramLinkService.isLinked(),
+      builder: (context, snapshot) {
+        final isLinked = snapshot.data ?? false;
+
+        return SettingsCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.telegram, color: Color(0xFF26A5E4), size: 22),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Vincular Telegram', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
-                    SizedBox(height: 2),
-                    Text(
-                      'Registre dívidas por texto ou áudio no Telegram',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              Row(
+                children: [
+                  const Icon(Icons.telegram, color: Color(0xFF26A5E4), size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Telegram Bot', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 2),
+                        Text(
+                          isLinked
+                              ? 'Conta vinculada — registre dívidas e gastos por texto ou áudio'
+                              : 'Vincule para registrar dívidas por texto ou áudio no Telegram',
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  else
+                    Icon(
+                      isLinked ? Icons.check_circle_rounded : Icons.link_off_rounded,
+                      color: isLinked ? AppColors.success : AppColors.textSecondary,
+                      size: 20,
+                    ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () async {
-                final code = await TelegramLinkService.generateLinkCode();
-                if (code != null && mounted) {
-                  await Clipboard.setData(ClipboardData(text: code));
-                  if (mounted) {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: AppColors.surface,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        title: const Text('Código de vinculação', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: AppColors.primaryContainer.withValues(alpha: 0.3)),
-                              ),
-                              child: SelectableText(
-                                code,
-                                style: const TextStyle(
-                                  color: AppColors.primaryContainer,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 4,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Copiado! Envie no Telegram:',
-                              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 4),
-                            SelectableText(
-                              '/link $code',
-                              style: const TextStyle(
-                                color: AppColors.primaryContainer,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'monospace',
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 14),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: AppColors.warning.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.warning.withValues(alpha: 0.25)),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Digite o código EXATAMENTE como mostrado, em MAIÚSCULAS. Ex: $code (não ${code.toLowerCase()}).',
-                                      style: const TextStyle(color: AppColors.warning, fontSize: 11, height: 1.4),
-                                    ),
-                                  ),
-                                ],
-                              ),
+              const SizedBox(height: 14),
+              if (isLinked)
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          backgroundColor: AppColors.surface,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          title: const Text('Desvincular Telegram?', style: TextStyle(color: AppColors.textPrimary)),
+                          content: const Text('Você não poderá mais registrar dívidas pelo Telegram até vincular novamente.', style: TextStyle(color: AppColors.textSecondary)),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancelar')),
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(true),
+                              style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+                              child: const Text('Desvincular'),
                             ),
                           ],
                         ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(),
-                            child: const Text('Fechar', style: TextStyle(color: AppColors.primary)),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                }
-              },
-              icon: const Icon(Icons.link_rounded, size: 18),
-              label: const Text('Gerar código'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF26A5E4),
-                side: const BorderSide(color: Color(0xFF26A5E4)),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      );
+                      if (confirmed == true) {
+                        await TelegramLinkService.unlink();
+                        if (mounted) setState(() {});
+                      }
+                    },
+                    icon: const Icon(Icons.link_off_rounded, size: 18),
+                    label: const Text('Desvincular'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.danger,
+                      side: const BorderSide(color: AppColors.danger),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                )
+              else
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _generateAndShowTelegramCode(),
+                    icon: const Icon(Icons.link_rounded, size: 18),
+                    label: const Text('Gerar código de vinculação'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF26A5E4),
+                      side: const BorderSide(color: Color(0xFF26A5E4)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _generateAndShowTelegramCode() async {
+    final code = await TelegramLinkService.generateLinkCode();
+    if (code == null || !mounted) return;
+    await Clipboard.setData(ClipboardData(text: '/link $code'));
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Código de vinculação', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.w600)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.primaryContainer.withValues(alpha: 0.3)),
+              ),
+              child: SelectableText(
+                code,
+                style: const TextStyle(
+                  color: AppColors.primaryContainer,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 4,
+                ),
               ),
             ),
+            const SizedBox(height: 14),
+            const Text(
+              'Passo a passo:',
+              style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            _telegramStep('1', 'Abra o Telegram e busque @desafog_ai_bot'),
+            _telegramStep('2', 'Envie /start para iniciar o bot'),
+            _telegramStep('3', 'Envie o comando abaixo:'),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: SelectableText(
+                '/link $code',
+                style: const TextStyle(
+                  color: AppColors.primaryContainer,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'monospace',
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Comando copiado para a área de transferência!',
+              style: TextStyle(color: AppColors.success, fontSize: 11),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.warning.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Digite o código EXATAMENTE como mostrado, em MAIÚSCULAS. Ex: $code (e NÃO ${code.toLowerCase()}). O código expira em 15 minutos.',
+                      style: const TextStyle(color: AppColors.warning, fontSize: 11, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              setState(() {});
+            },
+            child: const Text('Fechar', style: TextStyle(color: AppColors.primary)),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _telegramStep(String number, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 20, height: 20,
+            decoration: BoxDecoration(
+              color: const Color(0xFF26A5E4).withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Center(child: Text(number, style: const TextStyle(color: Color(0xFF26A5E4), fontSize: 11, fontWeight: FontWeight.w700))),
+          ),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, height: 1.4))),
         ],
       ),
     );
@@ -582,7 +680,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 controller: nameController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Nome',
+                  labelText: 'Nome completo',
                   prefixIcon: Icon(Icons.person_outline, size: 20),
                 ),
               ),
@@ -594,6 +692,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   labelText: 'Renda mensal (R\$)',
                   prefixIcon: Icon(Icons.attach_money_rounded, size: 20),
                   hintText: 'Ex: 3500.00',
+                  helperText: 'Usada para calcular plano e simulador',
+                  helperMaxLines: 2,
                 ),
               ),
               const SizedBox(height: 12),

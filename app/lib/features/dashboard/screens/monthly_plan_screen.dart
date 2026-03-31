@@ -177,16 +177,17 @@ class _MonthlyPlanScreenState extends ConsumerState<MonthlyPlanScreen> {
                         ),
                         const SizedBox(height: 20),
                         Text(
-                          'Alocação tática',
+                          'Alocação inteligente',
                           style: textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Distribuição do orçamento disponível por prioridade',
+                          'Primeiro garantimos o mínimo de cada dívida, depois direcionamos o extra para as dívidas com maior taxa de juros (estratégia avalanche).',
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
+                            height: 1.5,
                           ),
                         ),
                         const SizedBox(height: 24),

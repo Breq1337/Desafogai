@@ -161,22 +161,38 @@ async function handleCommand(chatId: number, text: string): Promise<void> {
     case '/link': {
       const code = args[0];
       if (!code) {
-        await sendMessage(botToken, chatId, 'Uso: `/link SEU_CODIGO`');
+        await sendMessage(botToken, chatId, 'Uso: `/link SEU_CODIGO`\n\nO código deve ser digitado em *MAIÚSCULAS*, exatamente como mostrado no app.');
         return;
       }
-      const uid = await linkAccount(chatId, code);
-      if (uid) {
-        await sendMessage(
-          botToken,
-          chatId,
-          '✅ *Conta vinculada com sucesso!*\n\nAgora você pode registrar dívidas e receber análises diretamente aqui.'
-        );
-      } else {
-        await sendMessage(
-          botToken,
-          chatId,
-          '❌ Código inválido ou expirado. Gere um novo no app.'
-        );
+      try {
+        const uid = await linkAccount(chatId, code);
+        if (uid) {
+          await sendMessage(
+            botToken,
+            chatId,
+            '✅ *Conta vinculada com sucesso!*\n\nAgora você pode registrar dívidas e gastos diretamente aqui.\n\n' +
+            '*Experimente:*\n• "Devo 3000 pro Nubank, juros 4% ao mês"\n• "Gastei 50 no almoço"\n• `/dividas` para listar dívidas'
+          );
+        } else {
+          await sendMessage(
+            botToken,
+            chatId,
+            '❌ *Código inválido ou expirado.*\n\n' +
+            'Verifique:\n' +
+            '• O código foi digitado em MAIÚSCULAS?\n' +
+            '• Já se passaram mais de 15 minutos?\n' +
+            '• O código já foi usado antes?\n\n' +
+            'Gere um novo código no app: Configurações → Telegram Bot → Gerar código.'
+          );
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes('index')) {
+          await sendMessage(botToken, chatId, '⚙️ O servidor precisa de configuração (índices do Firestore). Entre em contato com o suporte.');
+        } else {
+          await sendMessage(botToken, chatId, '❌ Erro ao vincular. Tente novamente em instantes.');
+        }
+        console.error(`Link error for chat ${chatId}:`, err);
       }
       break;
     }

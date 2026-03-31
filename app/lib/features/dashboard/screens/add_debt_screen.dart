@@ -31,6 +31,9 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
   bool _loading = false;
   bool _extracting = false;
   String? _error;
+  bool _submitted = false;
+
+  String _normalizeDecimal(String text) => text.replaceAll(',', '.');
 
   @override
   void dispose() {
@@ -206,8 +209,12 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
   }
 
   Future<void> _addDebt() async {
+    setState(() => _submitted = true);
+
     if (!_formKey.currentState!.validate() || _dueDate == null) {
-      setState(() => _error = 'Preencha todos os campos');
+      setState(() => _error = _dueDate == null
+          ? 'Selecione a data de vencimento'
+          : 'Preencha todos os campos obrigatórios');
       return;
     }
 
@@ -223,12 +230,12 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
         return;
       }
 
-      final minPayText = _minPaymentController.text.trim();
+      final minPayText = _normalizeDecimal(_minPaymentController.text.trim());
       final debt = Debt(
         id: '',
         creditor: _creditorController.text.trim(),
-        amount: double.parse(_amountController.text),
-        interestRate: double.parse(_rateController.text),
+        amount: double.parse(_normalizeDecimal(_amountController.text)),
+        interestRate: double.parse(_normalizeDecimal(_rateController.text)),
         minimumPayment: minPayText.isNotEmpty ? double.parse(minPayText) : 0,
         dueDate: _dueDate!,
         createdAt: DateTime.now(),
@@ -427,7 +434,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                             ),
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\.?\d{0,2}'),
+                                RegExp(r'^\d+[.,]?\d{0,2}'),
                               ),
                             ],
                             decoration: InputDecoration(
@@ -438,8 +445,8 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Informe o valor';
                               }
-                              if (double.tryParse(value) == null ||
-                                  double.parse(value) <= 0) {
+                              final parsed = double.tryParse(_normalizeDecimal(value));
+                              if (parsed == null || parsed <= 0) {
                                 return 'Valor inválido';
                               }
                               return null;
@@ -479,7 +486,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                             ),
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                RegExp(r'^\d+\.?\d{0,2}'),
+                                RegExp(r'^\d+[.,]?\d{0,2}'),
                               ),
                             ],
                             decoration: InputDecoration(
@@ -490,7 +497,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Informe a taxa';
                               }
-                              if (double.tryParse(value) == null) {
+                              if (double.tryParse(_normalizeDecimal(value)) == null) {
                                 return 'Taxa inválida';
                               }
                               return null;
@@ -530,7 +537,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                           const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d+\.?\d{0,2}'),
+                          RegExp(r'^\d+[.,]?\d{0,2}'),
                         ),
                       ],
                       decoration: InputDecoration(
@@ -539,8 +546,8 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                       ),
                       validator: (value) {
                         if (value != null && value.isNotEmpty) {
-                          if (double.tryParse(value) == null ||
-                              double.parse(value) < 0) {
+                          final parsed = double.tryParse(_normalizeDecimal(value));
+                          if (parsed == null || parsed < 0) {
                             return 'Valor inválido';
                           }
                         }
@@ -601,10 +608,10 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
                         ),
                       ),
                     ),
-                    if (_dueDate == null) ...[
+                    if (_submitted && _dueDate == null) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Data obrigatória',
+                        'Selecione a data de vencimento',
                         style: textTheme.bodySmall?.copyWith(
                           color: AppColors.danger,
                         ),

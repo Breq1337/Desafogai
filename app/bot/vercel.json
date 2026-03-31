@@ -11,6 +11,21 @@
     },
     "api/app/ai/extract-expense.ts": {
       "maxDuration": 30
+    },
+    "api/app/tokens/list.ts": {
+      "maxDuration": 10
+    },
+    "api/app/tokens/create.ts": {
+      "maxDuration": 10
+    },
+    "api/app/tokens/revoke.ts": {
+      "maxDuration": 10
+    },
+    "api/app/tokens/regenerate.ts": {
+      "maxDuration": 10
+    },
+    "api/app/health.ts": {
+      "maxDuration": 10
     }
   }
 }

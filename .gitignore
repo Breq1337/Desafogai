@@ -40,3 +40,4 @@ app/.env
 app/.env.*
 app/.claude/
 app/service-account*.json
+.vercel

@@ -71,7 +71,6 @@ abstract final class UserProfileService {
 
     final fields = <String, dynamic>{
       'displayName': normalizedName,
-      'bio': bio.trim(),
       'photoUrl': authUser?.photoURL ?? '',
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -89,6 +88,7 @@ abstract final class UserProfileService {
       await authUser.updateDisplayName(normalizedName);
     }
 
+    // Always keep settings/main.monthlyIncome in sync
     if (monthlyIncome != null) {
       await FirebaseFirestore.instance
           .collection('users')

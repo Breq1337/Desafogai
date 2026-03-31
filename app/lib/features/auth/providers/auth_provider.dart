@@ -10,8 +10,3 @@ final authServiceProvider = Provider<AuthService>((ref) {
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(authServiceProvider).authStateChanges;
 });
-
-final isDemoUserProvider = Provider<bool>((ref) {
-  final user = ref.watch(authStateProvider).valueOrNull;
-  return user != null && user.isAnonymous;
-});

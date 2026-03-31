@@ -78,10 +78,6 @@ class AuthService {
     }
   }
 
-  Future<UserCredential> signInAsDemo() {
-    return _auth.signInAnonymously();
-  }
-
   Future<void> sendPasswordReset(String email) {
     return _auth.sendPasswordResetEmail(email: email);
   }

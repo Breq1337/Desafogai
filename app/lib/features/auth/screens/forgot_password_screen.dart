@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../providers/auth_provider.dart';
 import '../utils/auth_error_messages.dart';
 import '../widgets/auth_text_field.dart';
@@ -30,10 +31,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   Future<void> _sendReset() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+    setState(() { _loading = true; _error = null; });
 
     try {
       await ref
@@ -54,15 +52,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => context.pop(),
         ),
       ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: _sent ? _buildSuccess(textTheme) : _buildForm(textTheme),
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: _sent ? _buildSuccess(textTheme) : _buildForm(textTheme),
+            ),
           ),
         ),
       ),
@@ -73,18 +74,26 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(
-          Icons.mark_email_read_outlined,
-          size: 64,
-          color: AppColors.accent,
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: AppColors.success.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(
+            Icons.mark_email_read_outlined,
+            size: 32,
+            color: AppColors.success,
+          ),
         ),
         const SizedBox(height: 24),
         Text(
-          'E-mail enviado!',
-          style: textTheme.headlineMedium,
+          'E-mail enviado',
+          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Text(
           'Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.',
           style: textTheme.bodyMedium?.copyWith(
@@ -94,7 +103,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         ),
         const SizedBox(height: 32),
         SizedBox(
-          height: 52,
+          height: 50,
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () => context.pop(),
@@ -114,31 +123,32 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         children: [
           Text(
             'Redefinir senha',
-            style: textTheme.headlineMedium,
+            style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            'Informe seu e-mail para receber o link de redefinição',
+            'Enviaremos um link para redefinir sua senha',
             style: textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 32),
 
           if (_error != null) ...[
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.danger.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.danger.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                border: Border.all(
+                  color: AppColors.danger.withValues(alpha: 0.15),
+                ),
               ),
               child: Text(
                 _error!,
-                style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.danger,
-                ),
+                style: textTheme.bodySmall?.copyWith(color: AppColors.danger),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -155,25 +165,23 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               if (value == null || value.trim().isEmpty) {
                 return 'Informe seu e-mail';
               }
-              if (!value.contains('@')) {
-                return 'E-mail inválido';
-              }
+              if (!value.contains('@')) return 'E-mail inválido';
               return null;
             },
           ),
           const SizedBox(height: 24),
 
           SizedBox(
-            height: 52,
+            height: 50,
             child: ElevatedButton(
               onPressed: _loading ? null : _sendReset,
               child: _loading
                   ? const SizedBox(
-                      height: 20,
-                      width: 20,
+                      height: 18,
+                      width: 18,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppColors.textPrimary,
+                        color: Colors.white,
                       ),
                     )
                   : const Text('Enviar link'),

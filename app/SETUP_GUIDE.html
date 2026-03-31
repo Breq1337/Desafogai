@@ -86,7 +86,7 @@ table.ct tr:nth-child(even) td{background:#fafafa}
 <div class="sec">
   <div class="sh"><span class="n">1</span> Pré-requisitos e instalação do ambiente</div>
   <div class="sb">
-    <div class="note ok"><strong>O que já está pronto</strong>Código-fonte completo, firebase_options.dart gerado com chaves reais do projeto <code>desafog-ai</code>.</div>
+    <div class="note ok"><strong>O que já está pronto</strong>Código-fonte completo, firebase_options.dart gerado para o projeto <code>desafog-ai</code>.</div>
     <h3>Ferramentas necessárias</h3>
     <ul class="steps">
       <li><span class="cb"></span><strong>Flutter SDK ≥ 3.11.4</strong> — flutter.dev/get-started/install</li>
@@ -106,7 +106,7 @@ cd bot && npm install</pre>
 <div class="sec">
   <div class="sh"><span class="n">2</span> Configurar o projeto Firebase <span class="badge done">Parcialmente pronto</span></div>
   <div class="sb">
-    <div class="note ok"><strong>Boas notícias!</strong> firebase_options.dart já contém as chaves reais do projeto <code>desafog-ai</code>.</div>
+    <div class="note ok"><strong>Boas notícias!</strong> firebase_options.dart já está configurado para o projeto <code>desafog-ai</code>.</div>
     <h3>Ainda precisa fazer no console.firebase.google.com → projeto desafog-ai</h3>
     <ul class="steps">
       <li><span class="cb"></span><strong>Ativar Authentication:</strong> <em>Sign-in method → Email/Senha + Google → Ativar</em></li>
@@ -135,16 +135,16 @@ cd bot && npm install</pre>
   <div class="sb">
     <pre>cd E:\Projetos\Desafog.ai
 copy .env.example .env</pre>
-    <p>Preencha o <code>.env</code> com os valores abaixo (Firebase já está em firebase_options.dart, copie daqui):</p>
-    <pre>FIREBASE_API_KEY_WEB=AIzaSyCnsVzKhuWLoY5qs_CLQhWx1yM0LTG5rf8
+    <p>Preencha o <code>.env</code> com os valores abaixo (nunca publique chaves reais em documentação):</p>
+    <pre>FIREBASE_API_KEY_WEB=your_web_api_key
 FIREBASE_APP_ID_WEB=1:557072901026:web:4aa311b7f40f58feed08fb
 FIREBASE_MESSAGING_SENDER_ID=557072901026
 FIREBASE_PROJECT_ID=desafog-ai
 FIREBASE_AUTH_DOMAIN=desafog-ai.firebaseapp.com
 FIREBASE_STORAGE_BUCKET=desafog-ai.firebasestorage.app
-FIREBASE_API_KEY_ANDROID=AIzaSyBOdcPhREw-n3w9h6F5qkfhEJ-3kM9jnSg
+FIREBASE_API_KEY_ANDROID=your_android_api_key
 FIREBASE_APP_ID_ANDROID=1:557072901026:android:f276cf3a11fcbfe0ed08fb
-FIREBASE_API_KEY_IOS=AIzaSyCiOcwRqOk5ez8tebML0bQsOiucWMRHvRw
+FIREBASE_API_KEY_IOS=your_ios_api_key
 FIREBASE_APP_ID_IOS=1:557072901026:ios:2ce07194e0459bdded08fb
 FIREBASE_IOS_BUNDLE_ID=com.desafog.desafogAi
 

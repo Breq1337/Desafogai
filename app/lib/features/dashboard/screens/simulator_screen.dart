@@ -171,9 +171,10 @@ class _SimulatorScreenState extends ConsumerState<SimulatorScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Veja como cada estratégia afeta seu tempo de quitação',
+                          'Baseado na sua renda, gastos e dívidas reais. Veja quanto tempo e juros cada abordagem custa.',
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.textSecondary,
+                            height: 1.5,
                           ),
                         ),
                         const SizedBox(height: 24),

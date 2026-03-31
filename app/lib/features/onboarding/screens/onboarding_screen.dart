@@ -55,7 +55,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    await ref.read(onboarding.completeOnboardingProvider.future);
+    await ref.read(onboarding.completeOnboardingProvider(_monthlyIncome).future);
     if (mounted) context.go('/dashboard');
   }
 

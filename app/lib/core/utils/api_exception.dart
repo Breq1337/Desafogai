@@ -30,7 +30,11 @@ class ApiException implements Exception {
         message = 'Resposta expirou. Tente novamente.';
         break;
       case DioExceptionType.badResponse:
-        message = getBadResponseMessage(statusCode);
+        final data = error.response?.data;
+        final serverError = data is Map ? (data['error'] ?? data['detail']) : null;
+        message = serverError is String && serverError.isNotEmpty
+            ? serverError
+            : getBadResponseMessage(statusCode);
         break;
       case DioExceptionType.cancel:
         message = 'Requisição foi cancelada.';

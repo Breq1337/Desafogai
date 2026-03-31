@@ -1,75 +1,68 @@
+import 'dart:math';
+
 import '../models/debt_model.dart';
 import '../models/monthly_plan.dart';
 
 class MonthlyPlanService {
-  /// Gera plano mensal baseado em renda e dívidas
   static MonthlyPlan generate({
     required List<Debt> debts,
     required double monthlyIncome,
     double fixedExpenses = 0,
   }) {
-    final availableForPayment = monthlyIncome - fixedExpenses;
+    final availableForPayment = max(0.0, monthlyIncome - fixedExpenses);
     final sortedDebts = List<Debt>.from(debts)
       ..sort((a, b) => b.urgencyScore.compareTo(a.urgencyScore));
 
     double remainingBudget = availableForPayment;
     final recommendations = <MonthlyPlanRecommendation>[];
 
+    // Phase 1: guarantee minimum payments for all debts
+    final minimums = <String, double>{};
     for (final debt in sortedDebts) {
+      final minPay = min(debt.minimumPayment, remainingBudget);
+      minimums[debt.id] = minPay;
+      remainingBudget -= minPay;
       if (remainingBudget <= 0) break;
+    }
 
-      // Calcula juros do mês
+    // Phase 2: allocate extra to highest-rate debts first (avalanche)
+    final extraAlloc = <String, double>{};
+    final byRate = List<Debt>.from(sortedDebts)
+      ..sort((a, b) => b.interestRate.compareTo(a.interestRate));
+    for (final debt in byRate) {
+      if (remainingBudget <= 0) break;
+      final interest = (debt.amount * debt.interestRate) / 100;
+      final minPaid = minimums[debt.id] ?? 0;
+      final ideal = min(debt.amount + interest - minPaid, remainingBudget);
+      final extra = max(0.0, ideal);
+      extraAlloc[debt.id] = extra;
+      remainingBudget -= extra;
+    }
+
+    for (final debt in sortedDebts) {
       final monthlyInterest = (debt.amount * debt.interestRate) / 100;
-
-      // Prioriza pagamento de juros + principal
-      final suggestedPayment = _calculatePayment(
-        debt: debt,
-        monthlyInterest: monthlyInterest,
-        availableBudget: remainingBudget,
-      );
-
-      final newBalance = debt.amount + monthlyInterest - suggestedPayment;
+      final suggested = (minimums[debt.id] ?? 0) + (extraAlloc[debt.id] ?? 0);
+      final newBalance = debt.amount + monthlyInterest - suggested;
 
       recommendations.add(MonthlyPlanRecommendation(
         debtId: debt.id,
         creditor: debt.creditor,
-        suggestedPayment: suggestedPayment,
+        suggestedPayment: suggested,
         interestAccrual: monthlyInterest,
-        newBalance: newBalance > 0 ? newBalance : 0,
+        newBalance: max(0.0, newBalance),
       ));
-
-      remainingBudget -= suggestedPayment;
     }
 
     return MonthlyPlan(
       month: DateTime.now(),
       debts: debts,
       recommendations: recommendations,
-      totalSuggested: availableForPayment - remainingBudget,
+      totalSuggested: availableForPayment - max(0.0, remainingBudget),
       monthlyIncome: monthlyIncome,
       availableForPayment: availableForPayment,
     );
   }
 
-  /// Calcula pagamento otimizado para a dívida
-  static double _calculatePayment({
-    required Debt debt,
-    required double monthlyInterest,
-    required double availableBudget,
-  }) {
-    // Pelo menos o pagamento mínimo
-    double payment = debt.minimumPayment;
-
-    // Se tem orçamento, prioriza dívidas com alta taxa
-    if (availableBudget > payment && debt.interestRate > 3.0) {
-      final extra = (availableBudget - payment) * (debt.interestRate / 100);
-      payment += extra;
-    }
-
-    return payment.clamp(0, availableBudget);
-  }
-
-  /// Estima meses para quitação (simulação simplificada)
   static int estimateMonthsToPayOff({
     required double debt,
     required double monthlyPayment,
@@ -78,7 +71,7 @@ class MonthlyPlanService {
     if (monthlyPayment <= 0) return 0;
     int months = 0;
     double remaining = debt;
-    const maxIterations = 600; // 50 anos max
+    const maxIterations = 600;
 
     while (remaining > 0 && months < maxIterations) {
       remaining += (remaining * monthlyRate) / 100;

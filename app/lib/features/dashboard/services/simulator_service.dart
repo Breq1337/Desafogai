@@ -142,10 +142,17 @@ class SimulatorService {
     final state = debtStates[debtId];
     if (state == null || state.balance <= 0) return 0;
 
+    final activeDebts = debtStates.values.where((s) => s.balance > 0).length;
+    final perDebtBudget = activeDebts > 0
+        ? availableForPayment / activeDebts
+        : availableForPayment;
+
     final payment = switch (scenario.strategy) {
       PaymentStrategy.minimum => state.minimumPayment,
-      PaymentStrategy.aggressive => state.minimumPayment * 2,
-      PaymentStrategy.balanced => state.minimumPayment * 1.5,
+      PaymentStrategy.aggressive =>
+        (perDebtBudget * 0.9).clamp(state.minimumPayment, double.infinity),
+      PaymentStrategy.balanced =>
+        (perDebtBudget * 0.7).clamp(state.minimumPayment, double.infinity),
       PaymentStrategy.custom => scenario.customPaymentAmount,
     };
 
