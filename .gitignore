@@ -1,1 +1,42 @@
 node_modules
+
+# Secrets and local env
+.env
+.env.*
+*.key
+*.keystore
+service-account*.json
+google-services.json
+GoogleService-Info.plist
+
+# Git/tooling
+.git/
+.vercel/
+.claude/
+.cursor/
+
+# Build artifacts
+build/
+dist/
+.dart_tool/
+.pub/
+.pub-cache/
+coverage/
+
+# Flutter local/generated
+**/.flutter-plugins-dependencies
+**/.metadata
+**/.idea/
+**/.gradle/
+**/.kotlin/
+**/android/local.properties
+**/android/.gradle/
+**/windows/flutter/ephemeral/
+**/macos/Flutter/ephemeral/
+
+# Keep secrets out of nested app copy
+app/keys.txt
+app/.env
+app/.env.*
+app/.claude/
+app/service-account*.json

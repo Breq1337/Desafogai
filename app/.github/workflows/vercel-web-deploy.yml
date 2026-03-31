@@ -1,0 +1,47 @@
+name: Vercel Web Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-web:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.11.4"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Validate code quality
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy preview (PR)
+        if: github.event_name == 'pull_request'
+        run: vercel deploy build/web --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy production (main)
+        if: github.event_name == 'push'
+        run: vercel deploy build/web --prod --token=${{ secrets.VERCEL_TOKEN }}

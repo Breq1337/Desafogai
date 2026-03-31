@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Desafog.ai — Guia de Configuração Manual</title>
+<style>
+:root{--b:#6C63FF;--a:#FF6584;--t:#222;--m:#555;--br:#ddd;--cb:#f4f4f8;--ok:#2ecc71;--w:#e67e22}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:13.5px;line-height:1.65;color:var(--t);max-width:900px;margin:0 auto;padding:32px 40px}
+.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;page-break-after:always}
+.cover .logo{font-size:52px;font-weight:900;color:var(--b);letter-spacing:-2px}
+.cover .logo span{color:var(--a)}
+.cover table{border-collapse:collapse;width:420px;margin-top:16px}
+.cover td{padding:6px 12px;border:1px solid var(--br)}
+.cover td:first-child{font-weight:600;color:var(--m);background:#fafafa}
+.toc{page-break-after:always;margin-bottom:32px}
+.toc h2{font-size:22px;color:var(--b);border-bottom:3px solid var(--b);padding-bottom:6px;margin-bottom:16px}
+.toc ol{padding-left:20px}.toc li{padding:4px 0;font-size:14px}
+.sec{page-break-inside:avoid;margin-bottom:36px}
+.sh{display:flex;align-items:center;gap:12px;background:var(--b);color:#fff;padding:10px 18px;border-radius:6px 6px 0 0;font-size:15px;font-weight:700}
+.sh .n{background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.sb{border:1px solid var(--br);border-top:none;border-radius:0 0 6px 6px;padding:18px 22px}
+h3{font-size:13.5px;color:var(--b);margin:16px 0 5px}
+h3:first-child{margin-top:0}
+p{margin-bottom:9px}
+ul,ol{padding-left:20px;margin-bottom:9px}
+li{margin-bottom:3px}
+pre{background:var(--cb);border:1px solid var(--br);border-radius:4px;padding:10px 14px;font-size:11.5px;font-family:'Consolas','Courier New',monospace;overflow-x:auto;margin:8px 0;white-space:pre-wrap;word-break:break-all}
+code{background:var(--cb);border:1px solid #e0e0e8;border-radius:3px;padding:1px 4px;font-size:11.5px;font-family:'Consolas','Courier New',monospace}
+.note{border-left:4px solid var(--b);background:#f0eeff;padding:9px 14px;border-radius:0 4px 4px 0;margin:10px 0;font-size:13px}
+.note.w{border-color:var(--w);background:#fff8f0}
+.note.ok{border-color:var(--ok);background:#f0fff6}
+.note strong{display:block;margin-bottom:3px}
+.steps{list-style:none;padding:0}
+.steps li{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.steps li:last-child{border-bottom:none}
+.cb{width:16px;height:16px;border:2px solid var(--br);border-radius:3px;flex-shrink:0;margin-top:2px}
+.badge{display:inline-block;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;margin-left:8px}
+.done{background:#d4f5e2;color:#1a7a45}.manual{background:#fde8cc;color:#b45309}.opt{background:#e8e8ff;color:#4444aa}
+table.ct{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+table.ct th{background:#1a1a2e;color:#fff;padding:7px 11px;text-align:left}
+table.ct td{padding:6px 11px;border-bottom:1px solid var(--br)}
+table.ct tr:nth-child(even) td{background:#fafafa}
+@media print{body{padding:20px 28px;font-size:12px}.cover{min-height:auto;padding:60px 0}a{color:inherit;text-decoration:none}pre{font-size:10.5px}}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="logo">Desafog<span>.ai</span></div>
+  <p style="font-size:17px;color:var(--m);margin:8px 0 24px">Saia das dívidas com inteligência artificial</p>
+  <h1 style="font-size:26px;color:#333;margin-bottom:6px">Guia de Configuração Manual</h1>
+  <p style="color:var(--m);margin-bottom:24px">Tudo que você precisa fazer para colocar o app em produção</p>
+  <table>
+    <tr><td>Versão</td><td>1.0.0+1</td></tr>
+    <tr><td>Flutter SDK</td><td>≥ 3.11.4</td></tr>
+    <tr><td>Plataformas</td><td>Android · iOS · Web</td></tr>
+    <tr><td>Backend</td><td>Firebase + Vercel (Telegram Bot)</td></tr>
+    <tr><td>Data</td><td>30 de março de 2026</td></tr>
+  </table>
+  <p style="margin-top:32px;font-size:12px;color:#aaa">Abra no navegador → <strong>Arquivo → Imprimir → Salvar como PDF</strong></p>
+</div>
+
+<div class="toc">
+  <h2>Sumário</h2>
+  <ol>
+    <li>Pré-requisitos e instalação do ambiente</li>
+    <li>Configurar o projeto Firebase</li>
+    <li>Obter a chave de API do Gemini</li>
+    <li>Criar o arquivo <code>.env</code></li>
+    <li>Executar o app Flutter localmente</li>
+    <li>Configurar autenticação Google Sign-In</li>
+    <li>Regras de segurança do Firestore</li>
+    <li>Criar e configurar o bot do Telegram</li>
+    <li>Fazer deploy do bot no Vercel</li>
+    <li>Configurar webhook do Telegram</li>
+    <li>Build Android (APK / AAB)</li>
+    <li>Build iOS (Xcode / App Store)</li>
+    <li>CI/CD — GitHub Actions (segredos)</li>
+    <li>Notificações locais — Windows Developer Mode</li>
+    <li>Checklist final de produção</li>
+    <li>Custos e limites gratuitos</li>
+  </ol>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">1</span> Pré-requisitos e instalação do ambiente</div>
+  <div class="sb">
+    <div class="note ok"><strong>O que já está pronto</strong>Código-fonte completo, firebase_options.dart gerado com chaves reais do projeto <code>desafog-ai</code>.</div>
+    <h3>Ferramentas necessárias</h3>
+    <ul class="steps">
+      <li><span class="cb"></span><strong>Flutter SDK ≥ 3.11.4</strong> — flutter.dev/get-started/install</li>
+      <li><span class="cb"></span><strong>Node.js ≥ 18</strong> — nodejs.org</li>
+      <li><span class="cb"></span><strong>Vercel CLI</strong> — <code>npm i -g vercel</code></li>
+      <li><span class="cb"></span><strong>Firebase CLI</strong> — <code>npm i -g firebase-tools</code></li>
+      <li><span class="cb"></span><strong>FlutterFire CLI</strong> — <code>dart pub global activate flutterfire_cli</code></li>
+      <li><span class="cb"></span><strong>Android Studio</strong> (build Android) ou <strong>Xcode</strong> (build iOS)</li>
+    </ul>
+    <h3>Instalar dependências</h3>
+    <pre>cd E:\Projetos\Desafog.ai && flutter pub get
+cd bot && npm install</pre>
+    <pre>flutter doctor -v   # resolva todos os itens [X]</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">2</span> Configurar o projeto Firebase <span class="badge done">Parcialmente pronto</span></div>
+  <div class="sb">
+    <div class="note ok"><strong>Boas notícias!</strong> firebase_options.dart já contém as chaves reais do projeto <code>desafog-ai</code>.</div>
+    <h3>Ainda precisa fazer no console.firebase.google.com → projeto desafog-ai</h3>
+    <ul class="steps">
+      <li><span class="cb"></span><strong>Ativar Authentication:</strong> <em>Sign-in method → Email/Senha + Google → Ativar</em></li>
+      <li><span class="cb"></span><strong>Criar Firestore:</strong> <em>Firestore Database → Criar → Modo produção → southamerica-east1</em></li>
+      <li><span class="cb"></span><strong>Aplicar regras de segurança</strong> (ver Seção 7)</li>
+      <li><span class="cb"></span><strong>Gerar service account:</strong> <em>Configurações → Contas de serviço → Gerar nova chave privada</em> → salve o JSON</li>
+    </ul>
+    <div class="note w"><strong>Nunca commite o service-account.json!</strong> Adicione ao .gitignore.</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">3</span> Obter a chave de API do Gemini <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <ul class="steps">
+      <li><span class="cb"></span>Acesse <strong>aistudio.google.com/apikey</strong></li>
+      <li><span class="cb"></span>Clique em <strong>"Create API key"</strong> → selecione o projeto <code>desafog-ai</code></li>
+      <li><span class="cb"></span>Copie a chave (formato: <code>AIzaSy...</code>) → use na Seção 4</li>
+    </ul>
+    <div class="note"><strong>Tier gratuito (Gemini 2.0 Flash):</strong> 1.500 req/dia · 15 RPM · suficiente para MVP</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">4</span> Criar o arquivo .env <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <pre>cd E:\Projetos\Desafog.ai
+copy .env.example .env</pre>
+    <p>Preencha o <code>.env</code> com os valores abaixo (Firebase já está em firebase_options.dart, copie daqui):</p>
+    <pre>FIREBASE_API_KEY_WEB=AIzaSyCnsVzKhuWLoY5qs_CLQhWx1yM0LTG5rf8
+FIREBASE_APP_ID_WEB=1:557072901026:web:4aa311b7f40f58feed08fb
+FIREBASE_MESSAGING_SENDER_ID=557072901026
+FIREBASE_PROJECT_ID=desafog-ai
+FIREBASE_AUTH_DOMAIN=desafog-ai.firebaseapp.com
+FIREBASE_STORAGE_BUCKET=desafog-ai.firebasestorage.app
+FIREBASE_API_KEY_ANDROID=AIzaSyBOdcPhREw-n3w9h6F5qkfhEJ-3kM9jnSg
+FIREBASE_APP_ID_ANDROID=1:557072901026:android:f276cf3a11fcbfe0ed08fb
+FIREBASE_API_KEY_IOS=AIzaSyCiOcwRqOk5ez8tebML0bQsOiucWMRHvRw
+FIREBASE_APP_ID_IOS=1:557072901026:ios:2ce07194e0459bdded08fb
+FIREBASE_IOS_BUNDLE_ID=com.desafog.desafogAi
+
+GEMINI_API_KEY=SUA_CHAVE_AQUI        # ← único campo que você preenche
+GEMINI_MODEL=gemini-2.0-flash
+
+APP_ENV=production
+LOG_LEVEL=info
+ENABLE_AI_CHAT=true
+AI_CHAT_TIMEOUT_SECONDS=30
+AI_CHAT_MAX_TOKENS=1024
+FEATURE_MONTHLY_PLAN_ENABLED=true
+FEATURE_SIMULATOR_ENABLED=true
+FEATURE_AI_CHAT_ENABLED=true
+FEATURE_PRIORITY_ENGINE_ENABLED=true</pre>
+    <div class="note w"><strong>Nunca commite o .env!</strong> Já está no .gitignore. Verifique com <code>git status</code>.</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">5</span> Executar o app Flutter localmente</div>
+  <div class="sb">
+    <pre>flutter run -d chrome           # web
+flutter devices                 # listar dispositivos
+flutter run -d &lt;device-id&gt;     # Android/iOS
+flutter test                    # rodar 25 testes
+flutter build apk --debug       # verificar build Android</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">6</span> Configurar Google Sign-In <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <h3>Firebase Console</h3>
+    <ul class="steps">
+      <li><span class="cb"></span><em>Authentication → Sign-in method → Google → Ativar</em> → informe e-mail de suporte → Salvar</li>
+      <li><span class="cb"></span><em>Authentication → Settings → Authorized domains</em> → adicione seu domínio de produção</li>
+    </ul>
+    <h3>SHA-1 para Android (Google Sign-In)</h3>
+    <pre># Windows PowerShell
+keytool -list -v -keystore "$env:USERPROFILE\.android\debug.keystore" -alias androiddebugkey -storepass android -keypass android</pre>
+    <p>Copie o SHA-1 → <em>Firebase → Configurações → Android → Adicionar impressão digital</em></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">7</span> Regras de segurança do Firestore <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <p><em>Firestore Database → Regras</em> → substitua e clique em <strong>Publicar</strong>:</p>
+    <pre>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+    }
+    match /link_codes/{codeId} {
+      allow create: if request.auth != null
+                    &amp;&amp; request.resource.data.uid == request.auth.uid;
+      allow read: if false;
+    }
+    match /telegram_links/{chatId} {
+      allow read, write: if false;
+    }
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">8</span> Criar e configurar o bot do Telegram <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <h3>Criar via @BotFather</h3>
+    <ul class="steps">
+      <li><span class="cb"></span>Telegram → busque <strong>@BotFather</strong> → envie <code>/newbot</code></li>
+      <li><span class="cb"></span>Nome: <code>Desafog.ai</code> · Username: <code>desafog_ai_bot</code></li>
+      <li><span class="cb"></span>Copie o token: <code>1234567890:ABC-DEF...</code></li>
+    </ul>
+    <h3>Gerar service account em Base64</h3>
+    <pre># PowerShell — copia resultado para a área de transferência
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\service-account.json")) | clip</pre>
+    <h3>Arquivo bot\.env</h3>
+    <pre>cd E:\Projetos\Desafog.ai\bot && copy .env.example .env</pre>
+    <pre>TELEGRAM_BOT_TOKEN=token_do_botfather
+GEMINI_API_KEY=sua_chave_gemini
+FIREBASE_SERVICE_ACCOUNT_BASE64=string_base64
+WEBHOOK_SECRET=string_aleatoria_segura</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">9</span> Deploy do bot no Vercel <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <pre>vercel login   # primeira vez</pre>
+    <pre>cd E:\Projetos\Desafog.ai\bot
+vercel env add TELEGRAM_BOT_TOKEN
+vercel env add GEMINI_API_KEY
+vercel env add FIREBASE_SERVICE_ACCOUNT_BASE64
+vercel env add WEBHOOK_SECRET
+vercel --prod</pre>
+    <p>Anote a URL gerada — ex.: <code>https://desafog-telegram-bot.vercel.app</code></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">10</span> Configurar webhook do Telegram <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <pre>cd E:\Projetos\Desafog.ai\bot
+TELEGRAM_BOT_TOKEN=seu_token \
+WEBHOOK_URL=https://desafog-telegram-bot.vercel.app/api/webhook \
+WEBHOOK_SECRET=sua_secret \
+node scripts/set-webhook.mjs</pre>
+    <p>Resposta esperada: <code>Webhook set: https://...</code></p>
+    <h3>Testar</h3>
+    <ul class="steps">
+      <li><span class="cb"></span>Telegram → bot → envie <code>/start</code> e <code>/help</code></li>
+      <li><span class="cb"></span>Flutter: <em>Configurações → Bot → Gerar código</em> → envie <code>/link CODIGO</code> no Telegram</li>
+      <li><span class="cb"></span>Envie uma dívida: <em>"Devo 5000 pro Nubank, juros 4% ao mês"</em></li>
+      <li><span class="cb"></span>Verifique se a dívida aparece no app</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">11</span> Build Android <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <p>Confirme que <code>android/app/google-services.json</code> existe (gerado pelo FlutterFire CLI).</p>
+    <h3>Keystore para release (uma vez só)</h3>
+    <pre>keytool -genkey -v -keystore desafog-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias desafog</pre>
+    <p>Crie <code>android/key.properties</code>:</p>
+    <pre>storePassword=SUA_SENHA
+keyPassword=SUA_SENHA
+keyAlias=desafog
+storeFile=C:/caminho/desafog-release.jks</pre>
+    <pre>flutter build apk --debug          # teste
+flutter build appbundle --release  # Play Store</pre>
+    <div class="note w"><strong>key.properties e .jks já estão no .gitignore.</strong> Nunca os commite.</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">12</span> Build iOS <span class="badge opt">Requer Mac</span></div>
+  <div class="sb">
+    <div class="note w"><strong>Requisito:</strong> macOS + Xcode. Não é possível compilar iOS no Windows.</div>
+    <ul class="steps">
+      <li><span class="cb"></span>Confirme <code>ios/Runner/GoogleService-Info.plist</code></li>
+      <li><span class="cb"></span>Xcode → Signing → Team: sua Apple Developer Account · Bundle ID: <code>com.desafog.desafogAi</code></li>
+    </ul>
+    <pre>flutter build ios --debug --simulator  # simulador
+flutter build ipa --release            # App Store</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">13</span> CI/CD — GitHub Actions <span class="badge manual">Manual</span></div>
+  <div class="sb">
+    <p><em>GitHub → Repositório → Settings → Secrets and variables → Actions → New repository secret</em></p>
+    <table class="ct">
+      <tr><th>Segredo</th><th>Valor</th></tr>
+      <tr><td><code>GEMINI_API_KEY</code></td><td>Chave do Google AI Studio</td></tr>
+      <tr><td><code>FIREBASE_PROJECT_ID</code></td><td><code>desafog-ai</code></td></tr>
+      <tr><td><code>TELEGRAM_BOT_TOKEN</code></td><td>Token do @BotFather</td></tr>
+      <tr><td><code>FIREBASE_SERVICE_ACCOUNT_BASE64</code></td><td>Base64 do service account JSON</td></tr>
+    </table>
+    <pre>git push origin master  # verifica se o pipeline passa em GitHub → Actions</pre>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">14</span> Notificações — Windows Developer Mode <span class="badge opt">Opcional</span></div>
+  <div class="sb">
+    <p>Notificações funcionam nativamente em Android, iOS, macOS e Linux. No Windows é necessário:</p>
+    <ul class="steps">
+      <li><span class="cb"></span><em>Configurações → Sistema → Para desenvolvedores → Modo Desenvolvedor → Ativado</em></li>
+      <li><span class="cb"></span>Reiniciar o Windows → <code>flutter run -d windows</code></li>
+    </ul>
+    <div class="note"><strong>Sem Developer Mode:</strong> o app funciona normalmente no Windows; apenas lembretes de notificação local não aparecem.</div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">15</span> Checklist final de produção</div>
+  <div class="sb">
+    <ul class="steps">
+      <li><span class="cb"></span>.env criado com GEMINI_API_KEY preenchida</li>
+      <li><span class="cb"></span>Firebase Auth: Email/Senha e Google ativados</li>
+      <li><span class="cb"></span>Firestore criado em southamerica-east1</li>
+      <li><span class="cb"></span>Regras de segurança do Firestore publicadas</li>
+      <li><span class="cb"></span>SHA-1 do debug keystore adicionado ao Firebase</li>
+      <li><span class="cb"></span><code>flutter test</code> — todos os 25 testes passando</li>
+      <li><span class="cb"></span>Login com Google funcionando no app</li>
+      <li><span class="cb"></span>Cadastro de dívida sincronizando no Firestore</li>
+      <li><span class="cb"></span>Chat com IA respondendo</li>
+      <li><span class="cb"></span>Bot do Telegram criado e token salvo</li>
+      <li><span class="cb"></span>Variáveis de ambiente adicionadas no Vercel</li>
+      <li><span class="cb"></span>Bot deployado no Vercel com sucesso</li>
+      <li><span class="cb"></span>Webhook registrado</li>
+      <li><span class="cb"></span>Vinculação Telegram ↔ Firebase funcionando</li>
+      <li><span class="cb"></span>Dívida do Telegram aparece no app Flutter</li>
+      <li><span class="cb"></span>Segredos GitHub Actions configurados</li>
+      <li><span class="cb"></span>Build APK release gerado sem erros</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh"><span class="n">16</span> Custos e limites gratuitos</div>
+  <div class="sb">
+    <table class="ct">
+      <tr><th>Serviço</th><th>Limite gratuito</th><th>Custo</th></tr>
+      <tr><td>Firebase Auth</td><td>10.000 auths/mês</td><td>R$ 0</td></tr>
+      <tr><td>Firestore</td><td>50k leituras/dia · 20k escritas/dia</td><td>R$ 0</td></tr>
+      <tr><td>Gemini 2.0 Flash</td><td>1.500 req/dia · 15 RPM</td><td>R$ 0</td></tr>
+      <tr><td>Telegram Bot API</td><td>Ilimitado</td><td>R$ 0</td></tr>
+      <tr><td>Vercel (bot)</td><td>100.000 req/mês</td><td>R$ 0</td></tr>
+      <tr><td><strong>Total MVP</strong></td><td></td><td><strong>R$ 0/mês</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<hr style="border:none;border-top:2px solid var(--br);margin:36px 0 16px"/>
+<p style="text-align:center;color:#aaa;font-size:12px">Desafog.ai — Guia gerado em 30/03/2026 · Consulte README.md e ARCHITECTURE.md para mais detalhes</p>
+
+</body>
+</html>

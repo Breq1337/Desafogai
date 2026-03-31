@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Assistente de IA: O Estrategista</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;family=Space_Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "inverse-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#930005",
+                        "surface-bright": "#3a3939",
+                        "on-primary-fixed": "#002022",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface-variant": "#b9cacb",
+                        "secondary-container": "#46464b",
+                        "surface-dim": "#131313",
+                        "on-secondary-container": "#b5b4ba",
+                        "primary-container": "#00f0ff",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-fixed": "#410001",
+                        "secondary-fixed": "#e3e2e7",
+                        "surface-container-highest": "#353534",
+                        "on-primary": "#00363a",
+                        "on-primary-container": "#006970",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#46464b",
+                        "on-tertiary-container": "#c1000a",
+                        "tertiary-container": "#ffcec7",
+                        "inverse-primary": "#006970",
+                        "tertiary": "#fff3f1",
+                        "primary-fixed": "#7df4ff",
+                        "tertiary-fixed": "#ffdad5",
+                        "on-primary-fixed-variant": "#004f54",
+                        "surface-container-low": "#1c1b1b",
+                        "surface": "#131313",
+                        "on-secondary-fixed": "#1a1b1f",
+                        "background": "#131313",
+                        "secondary": "#c6c6cb",
+                        "outline-variant": "#3b494b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "outline": "#849495",
+                        "surface-tint": "#00dbe9",
+                        "on-error": "#690005",
+                        "surface-variant": "#353534",
+                        "secondary-fixed-dim": "#c6c6cb",
+                        "primary": "#dbfcff",
+                        "tertiary-fixed-dim": "#ffb4aa",
+                        "on-secondary": "#2f3034",
+                        "surface-container": "#201f1f",
+                        "inverse-on-surface": "#313030",
+                        "primary-fixed-dim": "#00dbe9",
+                        "on-tertiary": "#690003",
+                        "on-surface": "#e5e2e1"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.grainy-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAN3i6mHSp05OEofxlLM89Bu_a3TTMwtJCjjbx3fmrGMVnLpiJGcLj1avPpIrcGThL2pScVgsNZ7n3-TZapWnqXqy8gGlnQVjs7HA_pHjJW1crIZTVMrqWnl9xtd7xhgoM4_Fx6vFAkvpDN17OecRBCVjkvlNC0jT7r1F-B0POAdPpcFtgGepMbA7hL0AjSy2vYKF2Z72bzMr883rb-heuBF2ViUxvRSMZMp16edQzEBlrIelMON4cn65QFYREgh25VDupvyC4cxZU);
+    opacity: 0.02
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#131313]/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00F0FF]" data-icon="insights">insights</span>
+<h1 class="font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold text-[#00F0FF]">COMANDO ESTRATÉGICO</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-full">
+<div class="w-2 h-2 rounded-full bg-primary-container animate-pulse shadow-[0_0_8px_#00F0FF]"></div>
+<span class="font-label text-[10px] tracking-widest text-primary uppercase">ESTATEGISTA AO VIVO</span>
+</div>
+<span class="material-symbols-outlined text-[#F5F5F7]/60" data-icon="settings">settings</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-4xl mx-auto relative">
+<!-- AI Intelligence Background Glow -->
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-container/5 blur-[120px] pointer-events-none rounded-full"></div>
+<!-- Strategy Feed -->
+<div class="space-y-12 relative z-10">
+<!-- Context Header -->
+<section class="flex flex-col gap-2">
+<span class="font-label text-xs tracking-[0.2em] text-primary/60 uppercase">STATUS OPERACIONAL</span>
+<div class="flex items-baseline gap-4">
+<h2 class="text-5xl font-black font-headline tracking-tighter text-on-surface uppercase">ESTATEGISTA IA</h2>
+<span class="text-primary text-sm font-label uppercase tracking-widest">FLUXO DE INSIGHT ATIVO</span>
+</div>
+</section>
+<!-- Insight Block 1: The Surplus Strategy -->
+<div class="group">
+<div class="p-8 bg-surface-container-low rounded-xl border-l-2 border-primary-container/30 relative overflow-hidden">
+<div class="absolute inset-0 grainy-texture"></div>
+<div class="flex flex-col md:flex-row justify-between items-start gap-6">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-primary">OTIMIZAÇÃO DE LIQUIDEZ</span>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-4 leading-tight">Você tem $200 extras este mês. Aplicar ao Chase Visa para redução de 2 semanas?</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-xl">
+                                A análise de IA confirma a redução consistente de gastos na categoria "Discricionário". Redirecionar esse superávit para sua dívida de 18,4% APR economizará 14 dias em seu cronograma total de liberdade.
+                            </p>
+</div>
+<div class="flex flex-col gap-3 w-full md:w-auto min-w-[180px]">
+<button class="w-full py-4 px-6 bg-gradient-to-r from-primary-container to-primary-fixed-dim text-on-primary font-label text-xs font-bold uppercase tracking-widest rounded shadow-[0_0_20px_rgba(0,240,255,0.15)] hover:shadow-[0_0_30px_rgba(0,240,255,0.25)] transition-all active:scale-95">
+                                EXECUTAR REDIRECIONAMENTO
+                            </button>
+<button class="w-full py-4 px-6 bg-surface-container-highest/40 backdrop-blur-md text-on-surface font-label text-xs font-bold uppercase tracking-widest rounded border border-outline-variant/15 hover:bg-surface-container-high transition-all">
+                                REVISAR CRONOGRAMA
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Insight Block 2: Critical Alert -->
+<div class="group">
+<div class="p-8 bg-surface-container-low rounded-xl border-l-2 border-error/40 relative overflow-hidden">
+<div class="absolute inset-0 grainy-texture"></div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-error/5 blur-3xl rounded-full"></div>
+<div class="flex flex-col md:flex-row justify-between items-start gap-6">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-error text-sm" data-icon="warning">warning</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-error">RISCO DE ESCALADA DE TAXA</span>
+</div>
+<h3 class="text-2xl font-bold font-headline mb-4 leading-tight">As taxas de juros do Amex estão projetadas para ajuste em 45 dias.</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-xl">
+                                Pivô estratégico recomendado. Se acelerarmos o pagamento do Amex em 12% no próximo mês, podemos liquidar o principal antes que o aumento da taxa entre em vigor.
+                            </p>
+</div>
+<div class="grid grid-cols-2 gap-2 w-full md:w-64">
+<div class="flex flex-col p-4 bg-surface-container-lowest rounded">
+<span class="font-label text-[10px] text-outline uppercase tracking-widest">ECONOMIA</span>
+<span class="text-xl font-bold text-error">$412.00</span>
+</div>
+<div class="flex flex-col p-4 bg-surface-container-lowest rounded">
+<span class="font-label text-[10px] text-outline uppercase tracking-widest">IMPACTO</span>
+<span class="text-xl font-bold text-on-surface">Crítico</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Component: The Debt Pulse -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 p-8 bg-surface-container rounded-xl relative overflow-hidden flex items-center justify-between border border-outline-variant/10">
+<div>
+<span class="font-label text-[10px] uppercase tracking-widest text-primary/60">ALGORITMO DE PULSO DE DÍVIDA</span>
+<h4 class="text-3xl font-black font-headline tracking-tighter mt-2 uppercase">CALCULANDO CAMINHO...</h4>
+<div class="mt-6 flex items-end gap-1 h-12">
+<div class="w-1 bg-primary-container h-8 animate-pulse"></div>
+<div class="w-1 bg-primary-container h-12"></div>
+<div class="w-1 bg-primary-container h-6"></div>
+<div class="w-1 bg-primary-container h-10"></div>
+<div class="w-1 bg-primary-fixed-dim h-4"></div>
+<div class="w-1 bg-primary-container h-12"></div>
+<div class="w-1 bg-tertiary-fixed-dim/40 h-10"></div>
+<div class="w-1 bg-primary-container h-14"></div>
+<div class="w-1 bg-primary-container h-8"></div>
+<div class="w-1 bg-error/40 h-16"></div>
+</div>
+</div>
+<div class="hidden md:block">
+<img alt="Data Visualization" class="w-32 h-32 object-cover opacity-60 mix-blend-screen" data-alt="abstract cyberpunk data visualization with glowing cyan lines and digital grids on a dark background tactical interface style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVW4xxHyp-D1ZKKWtj8ELwnNMnt7DR6sGGmSZZ9WNlzmRMQzwVoX_pDCyfQT07mwKTp_pSwaVWcDqQKdti3WS8mTqcj1H2dPiplIPZ3xjEhmT004wE32aapBm0at6hwG_F4LVGIv4LKuRd7vNuSDfGMFdUnVX-ZXAcr_C0hTfFRRN0mNISmMema-a7oL21X5FT0kR2DpHgM_-3X5r9cxGO9tbXRtCk2B2gdSPAhxb2haWeT9eaLSvYarhjZe7qoKzns1a5sSYa2DE"/>
+</div>
+</div>
+<div class="p-8 bg-primary-container rounded-xl flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-primary-container font-bold">PREVISÃO ESTRATÉGICA</span>
+<div>
+<span class="text-5xl font-black font-headline tracking-tighter text-on-primary">AGO</span>
+<span class="text-xl font-bold font-headline text-on-primary-container block -mt-2">2026</span>
+</div>
+<span class="text-xs font-label text-on-primary-container leading-tight">Projeção de Hora Zero Livre de Dívidas baseada nos caminhos atuais de otimização de IA.</span>
+</div>
+</section>
+<!-- Quick Inquiry / Interactive Input -->
+<section class="mt-12">
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none p-6 pl-14 font-label text-sm tracking-widest uppercase text-primary placeholder:text-outline/40 focus:ring-1 focus:ring-primary-container transition-all rounded-xl" placeholder="QUESTIONAR ESTRATEGISTA (EX: O QUE ACONTECE SE...)" type="text"/>
+<span class="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-primary" data-icon="psychology">psychology</span>
+</div>
+<div class="flex gap-4 mt-4 overflow-x-auto pb-4 no-scrollbar">
+<button class="whitespace-nowrap px-4 py-2 bg-surface-container-high rounded-full font-label text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors border border-outline-variant/10">
+                        SIMULAR BÔNUS
+                    </button>
+<button class="whitespace-nowrap px-4 py-2 bg-surface-container-high rounded-full font-label text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors border border-outline-variant/10">
+                        RELATÓRIO DE AVALANCHE DE DÍVIDAS
+                    </button>
+<button class="whitespace-nowrap px-4 py-2 bg-surface-container-high rounded-full font-label text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors border border-outline-variant/10">
+                        VAZAMENTOS DE GASTOS
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 backdrop-blur-2xl bg-[#131313]/90 border-t border-[#3B494B]/15 shadow-[0_-8px_40px_-12px_rgba(0,240,255,0.1)]">
+<a class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</a>
+<a class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="ads_click">ads_click</span>
+</a>
+<a class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="Waterfall_chart">waterfall_chart</span>
+</a>
+<a class="flex items-center justify-center text-[#00F0FF] bg-[#00F0FF]/10 rounded-xl p-3 shadow-[0_0_15px_rgba(0,240,255,0.3)]" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</a>
+</nav>
+<style>
+        /* Custom scrollbar suppression */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

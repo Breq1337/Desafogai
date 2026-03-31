@@ -1,0 +1,58 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+
+jobs:
+  security-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.11.4'
+        cache: true
+
+    - name: Run Flutter security analysis
+      run: flutter analyze --fatal-infos
+
+    - name: Check for hardcoded secrets
+      run: |
+        if grep -r "ANTHROPIC_API_KEY=" lib/ test/ || \
+           grep -r "firebaseConfig" lib/ test/ || \
+           grep -r "sk-ant-" lib/ test/ || \
+           grep -r "AIzaSy" lib/ test/; then
+          echo "⚠️  Possible hardcoded secrets detected!"
+          exit 1
+        fi
+        echo "✅ No hardcoded secrets found"
+
+    - name: Check pubspec.yaml
+      run: |
+        flutter pub outdated --no-dependency-overrides || true
+
+  dependency-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.11.4'
+        cache: true
+
+    - name: Check for vulnerable dependencies
+      run: flutter pub get && flutter pub outdated || true
+
+    - name: Get package info
+      run: flutter pub list-package-dirs

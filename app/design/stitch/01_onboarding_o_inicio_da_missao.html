@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desafog.ai | Onboarding: O Início da Missão</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;family=Space_Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "error": "#ffb4ab",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary-fixed-variant": "#930005",
+              "surface-bright": "#3a3939",
+              "on-primary-fixed": "#002022",
+              "surface-container-high": "#2a2a2a",
+              "on-surface-variant": "#b9cacb",
+              "secondary-container": "#46464b",
+              "surface-dim": "#131313",
+              "on-secondary-container": "#b5b4ba",
+              "primary-container": "#00f0ff",
+              "on-background": "#e5e2e1",
+              "on-tertiary-fixed": "#410001",
+              "secondary-fixed": "#e3e2e7",
+              "surface-container-highest": "#353534",
+              "on-primary": "#00363a",
+              "on-primary-container": "#006970",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#46464b",
+              "on-tertiary-container": "#c1000a",
+              "tertiary-container": "#ffcec7",
+              "inverse-primary": "#006970",
+              "tertiary": "#fff3f1",
+              "primary-fixed": "#7df4ff",
+              "tertiary-fixed": "#ffdad5",
+              "on-primary-fixed-variant": "#004f54",
+              "surface-container-low": "#1c1b1b",
+              "surface": "#131313",
+              "on-secondary-fixed": "#1a1b1f",
+              "background": "#131313",
+              "secondary": "#c6c6cb",
+              "outline-variant": "#3b494b",
+              "surface-container-lowest": "#0e0e0e",
+              "outline": "#849495",
+              "surface-tint": "#00dbe9",
+              "on-error": "#690005",
+              "surface-variant": "#353534",
+              "secondary-fixed-dim": "#c6c6cb",
+              "primary": "#dbfcff",
+              "tertiary-fixed-dim": "#ffb4aa",
+              "on-secondary": "#2f3034",
+              "surface-container": "#201f1f",
+              "inverse-on-surface": "#313030",
+              "primary-fixed-dim": "#00dbe9",
+              "on-tertiary": "#690003",
+              "on-surface": "#e5e2e1"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+      }
+      .bg-grain {
+        background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBJLI3HQYi8mXosDG47ATKaULBRNFsaLoidks_xLH5XbZrnhPzo3zpOFbPoHm8xd0-40X0S0zY1IaUFec3gaRJ9gsm6xrHoTAFFFOjwJNBV0mFYEyjQFXX-487SuGdsjrUkT6syV_1cVrZ4Oeasov0qfyTOzh-VmxuJ6MJ3tKpb5seX7IpiqL_NY8WtkU1Fy9OS8HNkYJ5QEwNPfSa1fO81cMlqjWlyA2OSBmO04b1MuqhO79nEmPrXGmayGCKa8umCF6OTs_uMUgU);
+        opacity: 0.03
+      }
+      .cinematic-glow {
+        background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.08) 0%, transparent 70%)
+      }
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- Cinematic Background Base -->
+<div class="fixed inset-0 z-0 bg-surface">
+<div class="absolute inset-0 bg-grain pointer-events-none"></div>
+<div class="absolute inset-0 cinematic-glow pointer-events-none"></div>
+<!-- Abstract light streak -->
+<div class="absolute top-1/4 -left-20 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-primary-container/20 to-transparent rotate-[35deg] blur-sm"></div>
+<div class="absolute bottom-1/4 -right-20 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-error/10 to-transparent -rotate-[15deg] blur-md"></div>
+</div>
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#131313]/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00F0FF]" data-icon="insights">insights</span>
+<span class="font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold text-[#00F0FF]">COMANDO ESTRATÉGICO</span>
+</div>
+</nav>
+<!-- Main Onboarding Canvas -->
+<main class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center">
+<!-- Imagery Section -->
+<div class="relative w-full max-w-4xl mb-12">
+<div class="aspect-[21/9] w-full overflow-hidden rounded-xl border border-outline-variant/15 relative">
+<img alt="Abstract digital landscape with glowing cyan light streaks piercing through a dense deep charcoal void, cinematic atmospheric depth" class="w-full h-full object-cover grayscale opacity-60 mix-blend-luminosity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqtlCfIfqlznK9wsA-Tni8MtvXAVF5toYH02VEdEf9mYW-W9WMLuEzOqUWK3FpfbTBJBbdwji6OMDJe031agj7vOYRFN3elTIoda6do5fdlM4lGM8NGneu6NOAgrW2nW9guiqfPjqiBVfTL1QGXrfQWf9hQLKKShSf4QsUEFeIXnJ13AqupZLmOg3BiudXYQMPydw4wEZowr5ml2LwrWdqnhql_eMfwWl0qyWnb7dRcTFRt1-z2kc0VKe3-4FBfSeJJmIeM5x8MTM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<!-- Tactical Overlay -->
+<div class="absolute top-4 right-4 flex flex-col items-end">
+<span class="font-label text-[10px] tracking-[0.2em] text-primary-container/40 uppercase">SISTEMA PRONTO</span>
+<span class="font-label text-[10px] tracking-[0.2em] text-on-surface/20 uppercase">v4.0.28-Alpha | Desafog.ai</span>
+</div>
+</div>
+</div>
+<!-- Editorial Typography Content -->
+<div class="max-w-2xl">
+<header class="mb-4">
+<h2 class="font-label text-sm uppercase tracking-[0.3em] text-primary-container mb-6 opacity-80">Fase Um: Libertação</h2>
+<h1 class="font-headline text-5xl md:text-7xl font-black tracking-[-0.04em] text-on-surface leading-tight">
+                QUEBRE O <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-primary-fixed-dim">CICLO.</span>
+</h1>
+</header>
+<p class="text-on-surface-variant text-lg md:text-xl font-light leading-relaxed mb-12 max-w-lg mx-auto">
+            Dívida não é apenas um número; é gravidade. Nós fornecemos a velocidade de escape. Implante inteligência tática para retomar seu futuro.
+        </p>
+<!-- Strategic Trigger -->
+<div class="flex flex-col items-center gap-6">
+<button class="group relative px-12 py-5 bg-gradient-to-r from-primary-container to-primary-fixed-dim rounded-md overflow-hidden transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(0,240,255,0.2)] hover:shadow-[0_0_40px_rgba(0,240,255,0.4)]">
+<div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="relative font-label text-sm font-bold uppercase tracking-[0.15em] text-on-primary">INICIAR MISSÃO</span>
+</button>
+<button class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40 hover:text-on-surface transition-colors">
+                LOGIN DE OPERADOR EXISTENTE
+            </button>
+</div>
+</div>
+<!-- Background Data visualization -->
+<div class="absolute bottom-12 left-12 hidden lg:block opacity-20">
+<div class="flex items-end gap-2 h-16">
+<div class="w-1 bg-primary-container h-8"></div>
+<div class="w-1 bg-primary-container h-12"></div>
+<div class="w-1 bg-primary-container h-6"></div>
+<div class="w-1 bg-error h-14"></div>
+<div class="w-1 bg-error h-16"></div>
+<div class="w-1 bg-error h-10"></div>
+<div class="w-1 bg-primary-container h-4"></div>
+</div>
+<p class="font-label text-[8px] uppercase tracking-widest mt-2">Índice Global de Dívida / Pulso</p>
+</div>
+<div class="absolute bottom-12 right-12 hidden lg:block text-right opacity-20">
+<p class="font-label text-[8px] uppercase tracking-widest mb-1">Status</p>
+<p class="font-label text-xs uppercase tracking-widest text-primary-container">Aguardando Implantação</p>
+</div>
+</main>
+</body></html>

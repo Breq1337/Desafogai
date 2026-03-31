@@ -1,0 +1,25 @@
+{
+  "name": "desafog-telegram-bot",
+  "version": "1.1.1",
+  "private": true,
+  "type": "module",
+  "description": "Telegram bot for Desafog.ai — register debts and get AI financial advice via chat/voice",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "set-webhook": "node scripts/set-webhook.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "firebase-admin": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vercel": "^41.0.0",
+    "vitest": "^2.0.0"
+  }
+}

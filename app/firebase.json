@@ -1,0 +1,26 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "desafog-ai",
+          "appId": "1:557072901026:android:f276cf3a11fcbfe0ed08fb",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "desafog-ai",
+          "configurations": {
+            "android": "1:557072901026:android:f276cf3a11fcbfe0ed08fb",
+            "ios": "1:557072901026:ios:2ce07194e0459bdded08fb",
+            "web": "1:557072901026:web:4aa311b7f40f58feed08fb"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "indexes": "bot/firestore.indexes.json"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "api/webhook.ts": {
+      "maxDuration": 60
+    },
+    "api/app/ai/chat.ts": {
+      "maxDuration": 60
+    },
+    "api/app/ai/extract-debt.ts": {
+      "maxDuration": 30
+    },
+    "api/app/ai/extract-expense.ts": {
+      "maxDuration": 30
+    }
+  }
+}

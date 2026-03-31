@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DESAFOG.AI | Dashboard: Centro de Comando</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&amp;family=Space_Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#ffdad6",
+              "error": "#ffb4ab",
+              "inverse-surface": "#e5e2e1",
+              "on-tertiary-fixed-variant": "#930005",
+              "surface-bright": "#3a3939",
+              "on-primary-fixed": "#002022",
+              "surface-container-high": "#2a2a2a",
+              "on-surface-variant": "#b9cacb",
+              "secondary-container": "#46464b",
+              "surface-dim": "#131313",
+              "on-secondary-container": "#b5b4ba",
+              "primary-container": "#00f0ff",
+              "on-background": "#e5e2e1",
+              "on-tertiary-fixed": "#410001",
+              "secondary-fixed": "#e3e2e7",
+              "surface-container-highest": "#353534",
+              "on-primary": "#00363a",
+              "on-primary-container": "#006970",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#46464b",
+              "on-tertiary-container": "#c1000a",
+              "tertiary-container": "#ffcec7",
+              "inverse-primary": "#006970",
+              "tertiary": "#fff3f1",
+              "primary-fixed": "#7df4ff",
+              "tertiary-fixed": "#ffdad5",
+              "on-primary-fixed-variant": "#004f54",
+              "surface-container-low": "#1c1b1b",
+              "surface": "#131313",
+              "on-secondary-fixed": "#1a1b1f",
+              "background": "#131313",
+              "secondary": "#c6c6cb",
+              "outline-variant": "#3b494b",
+              "surface-container-lowest": "#0e0e0e",
+              "outline": "#849495",
+              "surface-tint": "#00dbe9",
+              "on-error": "#690005",
+              "surface-variant": "#353534",
+              "secondary-fixed-dim": "#c6c6cb",
+              "primary": "#dbfcff",
+              "tertiary-fixed-dim": "#ffb4aa",
+              "on-secondary": "#2f3034",
+              "surface-container": "#201f1f",
+              "inverse-on-surface": "#313030",
+              "primary-fixed-dim": "#00dbe9",
+              "on-tertiary": "#690003",
+              "on-surface": "#e5e2e1"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #F5F5F7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .grainy-texture {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.02;
+            pointer-events: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<div class="grainy-texture fixed inset-0 z-[100]"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#131313]/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00F0FF]" data-icon="insights">insights</span>
+<h1 class="font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold text-[#00F0FF]">Dashboard: Centro de Comando</h1>
+</div>
+<div class="flex items-center gap-6 hidden md:flex">
+<nav class="flex gap-8">
+<a class="text-[#00F0FF] font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold" href="#">Painel</a>
+<a class="text-[#F5F5F7]/60 font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold hover:text-[#00F0FF] transition-colors" href="#">Estratégia</a>
+<a class="text-[#F5F5F7]/60 font-['Inter'] uppercase tracking-[0.1em] text-xs font-bold hover:text-[#00F0FF] transition-colors" href="#">Inteligência</a>
+</nav>
+</div>
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden">
+<img alt="Perfil" data-alt="portrait of a focused professional man in low key cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk6K4MLq-4d65Z1Lz6bmrSHKIQJAP8XJiXuRq4WRAqgdT12RV92HPqX3ym_gRoYLrc3WBTET5Q5D_GvSfAx-ZOoWDlYklGa5eSbtCd9B64JLu3t8u-fOfRblEgxNO5yXU8F7ttim_RiY2nywcGvmJZy8eU3CdWwCgfvFZcX56QnEZqXaMmmmJup2a6448--4giEjqFPEgTcLETs842s4N9rqZqJjmfsWzkuQzwUN-4yLPo6gjPmljTLcgQ7P600J5sV-47i7JMaVI"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Hero Section: Total Liability Balance -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<span class="font-label text-xs uppercase tracking-[0.2em] text-outline">SALDO TOTAL DE PASSIVOS</span>
+<h2 class="font-headline text-6xl md:text-8xl font-black tracking-tighter text-on-background leading-none">
+                        $84.210.<span class="text-on-background/30 text-4xl md:text-6xl">00</span>
+</h2>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-4 border-primary-container/40 flex flex-col justify-between h-32 w-full md:w-64">
+<span class="font-label text-[10px] uppercase tracking-widest text-outline">TRAJETÓRIA ESTRATÉGICA</span>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-primary-fixed-dim">-12.4%</span>
+<span class="text-[10px] text-outline uppercase">VS MÊS ANTERIOR</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- AI Insight Block -->
+<div class="md:col-span-8 relative overflow-hidden rounded-xl bg-surface-container-low group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent opacity-50"></div>
+<div class="relative p-8 flex flex-col justify-between h-full min-h-[300px]">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-2 px-3 py-1 bg-primary-container/10 rounded-full">
+<span class="material-symbols-outlined text-primary-container text-sm" data-icon="psychology" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label text-[10px] uppercase tracking-widest text-primary-container">INSIGHT ESTRATÉGICO DE IA</span>
+</div>
+<span class="font-label text-[10px] text-outline/40">ID DE CÁLCULO: 99x-A1</span>
+</div>
+<div class="max-w-xl mt-8">
+<h3 class="font-headline text-3xl md:text-5xl font-bold leading-tight mb-4">
+                            Você pode estar <span class="text-primary-container">livre de dívidas</span> em <span class="text-primary-container">9 meses</span>.
+                        </h3>
+<p class="text-on-surface-variant/80 font-body text-sm md:text-base max-w-md">
+                            Ao realocar $450 dos seus gastos flexíveis para o passivo de 24.9% APR, podemos acionar um efeito de liquidação composta.
+                        </p>
+</div>
+<div class="mt-8 flex gap-4">
+<button class="bg-gradient-to-r from-primary-container to-primary-fixed-dim text-on-primary font-label text-xs font-bold uppercase py-3 px-8 rounded-md hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all">
+                            EXECUTAR MANOBRA
+                        </button>
+</div>
+</div>
+<div class="absolute -right-20 -bottom-20 w-64 h-64 bg-primary-container/10 blur-[100px] rounded-full"></div>
+</div>
+<!-- Erosion Progress -->
+<div class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
+<div class="font-label text-[10px] uppercase tracking-widest text-outline absolute top-8 left-8">PROGRESSO DE EROSÃO</div>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-container-high" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary-container filter drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]" cx="96" cy="96" fill="transparent" r="80" stroke="currentColor" stroke-dasharray="502" stroke-dashoffset="320" stroke-linecap="butt" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-headline text-4xl font-black">36%</span>
+<span class="font-label text-[10px] text-outline uppercase tracking-widest">ERODIDO</span>
+</div>
+</div>
+<div class="mt-8 text-center">
+<p class="font-label text-[10px] text-outline mb-1 uppercase">VELOCIDADE DE ESCAPE RESTANTE</p>
+<p class="font-headline text-xl font-bold text-on-background">$54.120,00</p>
+</div>
+</div>
+<!-- Priority Targets -->
+<div class="md:col-span-12">
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-label text-xs uppercase tracking-[0.2em] text-on-background font-bold">ALVOS PRIORITÁRIOS</h4>
+<span class="h-[1px] flex-grow mx-6 bg-outline-variant/10"></span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Debt Card 1 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-t border-error/20 group hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="bg-error-container text-on-error-container font-label text-[9px] px-2 py-0.5 rounded uppercase font-bold">ATRASADO</span>
+</div>
+<div class="space-y-1 mb-6">
+<h5 class="text-on-background font-headline font-bold text-lg">Amex Platinum</h5>
+<p class="text-outline text-xs">Taxa de Juros: 29.9% APR</p>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label text-[10px] text-outline uppercase tracking-wider">Saldo</p>
+<p class="font-headline text-xl font-bold text-error">$14.200</p>
+</div>
+<span class="material-symbols-outlined text-outline/30 group-hover:text-error transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Debt Card 2 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-t border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-outline" data-icon="credit_card">credit_card</span>
+<span class="bg-surface-container-highest text-on-surface-variant font-label text-[9px] px-2 py-0.5 rounded uppercase font-bold">ATIVO</span>
+</div>
+<div class="space-y-1 mb-6">
+<h5 class="text-on-background font-headline font-bold text-lg">Chase Sapphire</h5>
+<p class="text-outline text-xs">Taxa de Juros: 18.4% APR</p>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label text-[10px] text-outline uppercase tracking-wider">Saldo</p>
+<p class="font-headline text-xl font-bold text-on-background">$22.510</p>
+</div>
+<span class="material-symbols-outlined text-outline/30" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Debt Card 3 -->
+<div class="bg-surface-container-low p-6 rounded-xl border-t border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-outline" data-icon="account_balance">account_balance</span>
+<span class="bg-surface-container-highest text-on-surface-variant font-label text-[9px] px-2 py-0.5 rounded uppercase font-bold">ATIVO</span>
+</div>
+<div class="space-y-1 mb-6">
+<h5 class="text-on-background font-headline font-bold text-lg">Financiamento Auto</h5>
+<p class="text-outline text-xs">Taxa de Juros: 4.5% APR</p>
+</div>
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label text-[10px] text-outline uppercase tracking-wider">Saldo</p>
+<p class="font-headline text-xl font-bold text-on-background">$47.500</p>
+</div>
+<span class="material-symbols-outlined text-outline/30" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Strategy Snapshot -->
+<div class="md:col-span-12 lg:col-span-6 bg-surface-container-low rounded-xl p-8">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary-container" data-icon="waterfall_chart">waterfall_chart</span>
+<h4 class="font-label text-xs uppercase tracking-widest font-bold">Projeção Bola de Neve</h4>
+</div>
+<div class="h-48 w-full flex items-end gap-2 overflow-hidden">
+<div class="w-full bg-primary-container/20 h-full rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[90%] rounded-t-sm"></div>
+</div>
+<div class="w-full bg-primary-container/20 h-[80%] rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[75%] rounded-t-sm"></div>
+</div>
+<div class="w-full bg-primary-container/20 h-[70%] rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[60%] rounded-t-sm"></div>
+</div>
+<div class="w-full bg-primary-container/20 h-[55%] rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[45%] rounded-t-sm"></div>
+</div>
+<div class="w-full bg-primary-container/20 h-[45%] rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[30%] rounded-t-sm"></div>
+</div>
+<div class="w-full bg-primary-container/20 h-[35%] rounded-t-sm relative">
+<div class="absolute bottom-0 w-full bg-primary-container/40 h-[15%] rounded-t-sm"></div>
+</div>
+</div>
+<div class="flex justify-between mt-4">
+<span class="font-label text-[10px] text-outline">T1</span>
+<span class="font-label text-[10px] text-outline">T2</span>
+<span class="font-label text-[10px] text-outline">T3</span>
+<span class="font-label text-[10px] text-outline">T4</span>
+</div>
+</div>
+<!-- Mini Metrics -->
+<div class="md:col-span-12 lg:col-span-6 grid grid-cols-2 gap-6">
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase tracking-widest text-outline">SANGRAMENTO DE JUROS / MÊS</span>
+<div>
+<p class="font-headline text-2xl font-bold text-error">$1.140</p>
+<p class="text-[10px] text-on-error/60 mt-1 uppercase">MANOBRA NECESSÁRIA</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase tracking-widest text-outline">MUNIÇÃO DISPONÍVEL</span>
+<div>
+<p class="font-headline text-2xl font-bold text-primary-container">$2.800</p>
+<p class="text-[10px] text-primary-container/60 mt-1 uppercase">PRONTO PARA IMPLANTAÇÃO</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase tracking-widest text-outline">INTEGRIDADE DE CRÉDITO</span>
+<div>
+<p class="font-headline text-2xl font-bold text-on-background">742</p>
+<p class="text-[10px] text-outline mt-1 uppercase">BASE ESTÁVEL</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between">
+<span class="font-label text-[10px] uppercase tracking-widest text-outline">DIAS PARA A LIBERDADE</span>
+<div>
+<p class="font-headline text-2xl font-bold text-on-background">274</p>
+<p class="text-[10px] text-outline mt-1 uppercase">CONTAGEM REGRESSIVA T-MINUS</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 backdrop-blur-2xl bg-[#131313]/90 md:hidden border-t border-[#3B494B]/15">
+<a aria-label="Início" class="flex items-center justify-center text-[#00F0FF] bg-[#00F0FF]/10 rounded-xl p-3 shadow-[0_0_15px_rgba(0,240,255,0.3)]" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+</a>
+<a aria-label="Estratégia" class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="ads_click">ads_click</span>
+</a>
+<a aria-label="Projeções" class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="Waterfall_chart">waterfall_chart</span>
+</a>
+<a aria-label="IA Insight" class="flex items-center justify-center text-[#F5F5F7]/40 p-3 hover:text-[#00F0FF] hover:bg-[#1C1B1B] transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</a>
+</nav>
+</body></html>
