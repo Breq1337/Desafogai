@@ -37,7 +37,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           data: (expenses) => _ExpensesContent(
             expenses: expenses,
             totalAsync: totalAsync,
-            budgets: budgetsAsync.valueOrNull ?? {},
+            budgets: (budgetsAsync.valueOrNull ?? {}).map((k, v) => MapEntry(k, v.monthlyLimit)),
             categoryTotals: categoryTotals.valueOrNull ?? {},
             selectedCategory: _selectedCategory,
             onCategorySelected: (c) => setState(() => _selectedCategory = c),
