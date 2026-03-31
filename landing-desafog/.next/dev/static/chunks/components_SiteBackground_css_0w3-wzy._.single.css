@@ -1,0 +1,31 @@
+/* [project]/components/SiteBackground.css [app-client] (css) */
+.site-background-fx {
+  width: 100%;
+  min-height: 100dvh;
+  position: absolute;
+  inset: 0;
+}
+
+.site-background-fx__chrome {
+  filter: saturate(.78) brightness(.9) contrast(.93);
+  width: 106%;
+  height: 106%;
+  position: absolute;
+  inset: -3%;
+}
+
+@media (prefers-contrast: more) {
+  .site-background-fx__chrome {
+    filter: saturate(.9) brightness(.94) contrast();
+  }
+}
+
+.site-background-fx__veil {
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  background: linear-gradient(168deg, #0210249e 0%, #023e8a38 38%, #0077b624 62%, #0616308c 100%);
+  position: absolute;
+  inset: 0;
+}
+
+/*# sourceMappingURL=components_SiteBackground_css_0w3-wzy._.single.css.map*/

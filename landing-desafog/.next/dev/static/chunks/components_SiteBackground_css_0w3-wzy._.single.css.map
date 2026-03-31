@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/components/SiteBackground.css"],"sourcesContent":["/* Camadas do fundo: WebGL + filtro suave + véu com cores da marca (@theme globals.css) */\n\n.site-background-fx {\n  position: absolute;\n  inset: 0;\n  min-height: 100dvh;\n  width: 100%;\n}\n\n/* Leve expansão para o blur não “cortar” nas bordas */\n.site-background-fx__chrome {\n  position: absolute;\n  inset: -3%;\n  width: 106%;\n  height: 106%;\n  filter: saturate(0.78) brightness(0.9) contrast(0.93);\n}\n\n@media (prefers-contrast: more) {\n  .site-background-fx__chrome {\n    filter: saturate(0.9) brightness(0.94) contrast(1);\n  }\n}\n\n/* Véu: ancora o tom ao #021024 / #023E8A / #0077B6 sem apagar o movimento */\n.site-background-fx__veil {\n  pointer-events: none;\n  position: absolute;\n  inset: 0;\n  background: linear-gradient(\n    168deg,\n    rgba(2, 16, 36, 0.62) 0%,\n    rgba(2, 62, 138, 0.22) 38%,\n    rgba(0, 119, 182, 0.14) 62%,\n    rgba(6, 22, 48, 0.55) 100%\n  );\n  mix-blend-mode: soft-light;\n}\n"],"names":[],"mappings":"AAEA;;;;;;;AAQA;;;;;;;;AAQA;EACE;;;;;AAMF"}}]
+}

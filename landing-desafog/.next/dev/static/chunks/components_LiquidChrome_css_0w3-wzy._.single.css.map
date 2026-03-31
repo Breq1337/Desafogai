@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/components/LiquidChrome.css"],"sourcesContent":[".liquidChrome-container {\n  width: 100%;\n  height: 100%;\n}\n\n.liquidChrome-container canvas {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n"],"names":[],"mappings":"AAAA;;;;;AAKA"}}]
+}

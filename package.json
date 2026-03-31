@@ -1,0 +1,16 @@
+{
+  "name": "desafog-ai-web",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix landing-desafog",
+    "build": "npm run build --prefix landing-desafog",
+    "start": "npm run start --prefix landing-desafog",
+    "lint": "npm run lint --prefix landing-desafog"
+  },
+  "devDependencies": {
+    "shadcn": "^4.1.1"
+  },
+  "dependencies": {
+    "ogl": "^1.0.11"
+  }
+}

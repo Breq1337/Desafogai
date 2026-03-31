@@ -1,0 +1,13 @@
+/* [project]/components/LiquidChrome.css [app-client] (css) */
+.liquidChrome-container {
+  width: 100%;
+  height: 100%;
+}
+
+.liquidChrome-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/*# sourceMappingURL=components_LiquidChrome_css_0w3-wzy._.single.css.map*/

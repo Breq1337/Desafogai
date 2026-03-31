@@ -1,0 +1,38 @@
+/* Camadas do fundo: WebGL + filtro suave + véu com cores da marca (@theme globals.css) */
+
+.site-background-fx {
+  position: absolute;
+  inset: 0;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+/* Leve expansão para o blur não “cortar” nas bordas */
+.site-background-fx__chrome {
+  position: absolute;
+  inset: -3%;
+  width: 106%;
+  height: 106%;
+  filter: saturate(0.78) brightness(0.9) contrast(0.93);
+}
+
+@media (prefers-contrast: more) {
+  .site-background-fx__chrome {
+    filter: saturate(0.9) brightness(0.94) contrast(1);
+  }
+}
+
+/* Véu: ancora o tom ao #021024 / #023E8A / #0077B6 sem apagar o movimento */
+.site-background-fx__veil {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    168deg,
+    rgba(2, 16, 36, 0.62) 0%,
+    rgba(2, 62, 138, 0.22) 38%,
+    rgba(0, 119, 182, 0.14) 62%,
+    rgba(6, 22, 48, 0.55) 100%
+  );
+  mix-blend-mode: soft-light;
+}

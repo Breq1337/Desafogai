@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/components/Prism.css"],"sourcesContent":[".prism-container {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n"],"names":[],"mappings":"AAAA"}}]
+}
