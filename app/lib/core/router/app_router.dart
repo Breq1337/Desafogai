@@ -11,6 +11,7 @@ import '../../features/dashboard/screens/debt_detail_screen.dart';
 import '../../features/expenses/screens/add_expense_screen.dart';
 import '../../features/expenses/screens/budget_screen.dart';
 import '../../features/expenses/screens/cashflow_screen.dart';
+import '../../features/expenses/screens/expense_detail_screen.dart';
 import '../../features/onboarding/providers/onboarding_provider.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import 'router_notifier.dart';
@@ -108,6 +109,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const AddExpenseScreen(),
           ),
           GoRoute(
+            path: 'expenses/:id',
+            builder: (context, state) {
+              final expenseId = state.pathParameters['id']!;
+              return ExpenseDetailScreen(expenseId: expenseId);
+            },
+          ),
+          GoRoute(
             path: 'expenses/budget',
             builder: (context, state) => const BudgetScreen(),
           ),
@@ -120,4 +128,3 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-

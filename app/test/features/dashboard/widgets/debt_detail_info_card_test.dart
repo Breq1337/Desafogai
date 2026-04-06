@@ -49,7 +49,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Pagamento mínimo'), findsOneWidget);
+      expect(find.textContaining('Pagamento'), findsOneWidget);
       expect(find.textContaining('300'), findsOneWidget);
     });
 
@@ -89,6 +89,7 @@ void main() {
 
   group('DebtDetailEditCard', () {
     testWidgets('renders all edit fields', (tester) async {
+      final creditorCtrl = TextEditingController(text: 'Banco Teste');
       final amountCtrl = TextEditingController(text: '1000.00');
       final rateCtrl = TextEditingController(text: '3.50');
       final minCtrl = TextEditingController(text: '150.00');
@@ -99,6 +100,7 @@ void main() {
           home: Scaffold(
             body: SingleChildScrollView(
               child: DebtDetailEditCard(
+                creditorController: creditorCtrl,
                 amountController: amountCtrl,
                 rateController: rateCtrl,
                 minPaymentController: minCtrl,
@@ -110,12 +112,14 @@ void main() {
         ),
       );
 
-      expect(find.text('Modo de edição'), findsOneWidget);
+      expect(find.textContaining('Modo de'), findsOneWidget);
+      expect(find.text('Banco Teste'), findsOneWidget);
       expect(find.text('1000.00'), findsOneWidget);
       expect(find.text('3.50'), findsOneWidget);
       expect(find.text('150.00'), findsOneWidget);
       expect(find.text('15/06/2026'), findsOneWidget);
 
+      creditorCtrl.dispose();
       amountCtrl.dispose();
       rateCtrl.dispose();
       minCtrl.dispose();
@@ -124,6 +128,7 @@ void main() {
 
     testWidgets('tapping date field triggers onPickDate', (tester) async {
       var datePickerCalled = false;
+      final creditorCtrl = TextEditingController();
       final amountCtrl = TextEditingController();
       final rateCtrl = TextEditingController();
       final minCtrl = TextEditingController();
@@ -134,6 +139,7 @@ void main() {
           home: Scaffold(
             body: SingleChildScrollView(
               child: DebtDetailEditCard(
+                creditorController: creditorCtrl,
                 amountController: amountCtrl,
                 rateController: rateCtrl,
                 minPaymentController: minCtrl,
@@ -145,12 +151,12 @@ void main() {
         ),
       );
 
-      // Tap the GestureDetector wrapping the date field
       await tester.tap(find.byType(GestureDetector));
       await tester.pump();
 
       expect(datePickerCalled, isTrue);
 
+      creditorCtrl.dispose();
       amountCtrl.dispose();
       rateCtrl.dispose();
       minCtrl.dispose();

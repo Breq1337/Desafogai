@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import '../../dashboard/providers/ai_chat_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/voice_input_button.dart';
 import '../models/expense_model.dart';
+import '../services/expense_service.dart';
 import '../services/voice_expense_extractor.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
@@ -30,6 +30,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   bool _loading = false;
   bool _extracting = false;
   String? _error;
+  final _expenseService = ExpenseService();
+
+  String _normalizeDecimal(String text) => text.replaceAll(',', '.');
 
   @override
   void dispose() {
@@ -123,7 +126,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
       final expense = Expense(
         id: '',
-        amount: double.parse(_amountController.text),
+        amount: double.parse(_normalizeDecimal(_amountController.text)),
         category: _selectedCategory!,
         note: _noteController.text.trim(),
         date: _expenseDate!,
@@ -131,11 +134,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         createdAt: DateTime.now(),
       );
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('expenses')
-          .add(expense.toFirestore());
+      await _expenseService.createExpense(expense);
 
       if (mounted) {
         context.pop();
@@ -290,7 +289,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                           const TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d+\.?\d{0,2}'),
+                          RegExp(r'^\d+[.,]?\d{0,2}'),
                         ),
                       ],
                       decoration: InputDecoration(
@@ -301,8 +300,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Informe o valor';
                         }
-                        if (double.tryParse(value) == null ||
-                            double.parse(value) <= 0) {
+                        final parsed = double.tryParse(_normalizeDecimal(value));
+                        if (parsed == null || parsed <= 0) {
                           return 'Valor inválido';
                         }
                         return null;
@@ -322,7 +321,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       decoration: InputDecoration(
                         hintText: 'Selecione uma categoria',
                         prefixIcon: const Icon(Icons.category_rounded),

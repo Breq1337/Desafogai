@@ -8,7 +8,7 @@ import '../services/insights_engine.dart';
 
 final insightsProvider = FutureProvider<List<Insight>>((ref) async {
   final debts = ref.watch(debtsProvider).valueOrNull ?? <Debt>[];
-  final income = ref.watch(monthlyIncomeProvider).valueOrNull ?? 0.0;
+  final income = ref.watch(monthlyIncomeProvider);
   final totalExpenses = ref.watch(monthlyExpenseTotalProvider).valueOrNull ?? 0.0;
   final categorySpending = ref.watch(monthlyExpenseByCategoryProvider).valueOrNull ?? <String, double>{};
   final budgets = ref.watch(budgetsProvider).valueOrNull ?? {};

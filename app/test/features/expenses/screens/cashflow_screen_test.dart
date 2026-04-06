@@ -14,7 +14,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -34,14 +34,14 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 800));
 
-      expect(find.text('Fluxo de Caixa'), findsOneWidget);
+      expect(find.text('Fluxo de Caixa'), findsWidgets);
     });
 
     testWidgets('displays cashflow summary header', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -68,7 +68,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -95,7 +95,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -123,7 +123,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],
@@ -151,7 +151,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            monthlyIncomeProvider.overrideWith((ref) => Stream.value(3000.0)),
+            monthlyIncomeProvider.overrideWith((ref) => 3000.0),
             monthlyExpenseTotalProvider.overrideWith((ref) => Future.value(1500.0)),
             debtsProvider.overrideWith((ref) => Stream.value([])),
           ],

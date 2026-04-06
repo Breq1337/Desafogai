@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,12 +6,14 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../models/debt_model.dart';
+import '../services/debt_service.dart';
 import '../widgets/debt_detail_actions.dart';
 import '../widgets/debt_detail_header.dart';
 import '../widgets/debt_detail_info_card.dart';
 
 class DebtDetailScreen extends ConsumerStatefulWidget {
   final String debtId;
+
   const DebtDetailScreen({super.key, required this.debtId});
 
   @override
@@ -20,23 +21,26 @@ class DebtDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
+  final _dateFormat = DateFormat('dd/MM/yyyy');
+  final _debtService = DebtService();
+
   Debt? _debt;
   bool _isLoading = true;
   String? _error;
   bool _isEditMode = false;
   bool _isSaving = false;
 
+  late TextEditingController _creditorController;
   late TextEditingController _amountController;
   late TextEditingController _rateController;
   late TextEditingController _minPaymentController;
   late TextEditingController _dueDateController;
   DateTime? _editDueDate;
 
-  final _dateFormat = DateFormat('dd/MM/yyyy');
-
   @override
   void initState() {
     super.initState();
+    _creditorController = TextEditingController();
     _amountController = TextEditingController();
     _rateController = TextEditingController();
     _minPaymentController = TextEditingController();
@@ -46,6 +50,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
 
   @override
   void dispose() {
+    _creditorController.dispose();
     _amountController.dispose();
     _rateController.dispose();
     _minPaymentController.dispose();
@@ -53,30 +58,22 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
     super.dispose();
   }
 
-  DocumentReference _debtRef() {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('debts')
-        .doc(widget.debtId);
-  }
-
   Future<void> _loadDebt() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
+
     try {
-      final doc = await _debtRef().get();
-      if (!doc.exists) {
+      final debt = await _debtService.getDebt(widget.debtId);
+      if (debt == null) {
         setState(() {
-          _error = 'Dívida não encontrada.';
+          _error = 'DÃ­vida nÃ£o encontrada.';
           _isLoading = false;
         });
         return;
       }
-      final debt = Debt.fromFirestore(doc);
+
       _populateControllers(debt);
       setState(() {
         _debt = debt;
@@ -84,13 +81,14 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Erro ao carregar dívida: $e';
+        _error = 'Erro ao carregar dÃ­vida: $e';
         _isLoading = false;
       });
     }
   }
 
   void _populateControllers(Debt debt) {
+    _creditorController.text = debt.creditor;
     _amountController.text = debt.amount.toStringAsFixed(2);
     _rateController.text = debt.interestRate.toStringAsFixed(2);
     _minPaymentController.text = debt.minimumPayment.toStringAsFixed(2);
@@ -101,10 +99,10 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
   Future<void> _markAsPaid() async {
     setState(() => _isSaving = true);
     try {
-      await _debtRef().update({'status': 'paid'});
+      await _debtService.updateDebt(widget.debtId, {'status': 'paid'});
       await _loadDebt();
       if (mounted) {
-        _showSnackBar('Dívida marcada como paga!', AppColors.accent);
+        _showSnackBar('DÃ­vida marcada como paga!', AppColors.accent);
       }
     } catch (e) {
       _showSnackBar('Erro: $e', AppColors.danger);
@@ -120,10 +118,10 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
 
     setState(() => _isSaving = true);
     try {
-      await _debtRef().update({'status': newStatus});
+      await _debtService.updateDebt(widget.debtId, {'status': newStatus});
       await _loadDebt();
       if (mounted) {
-        _showSnackBar('Dívida $label!', AppColors.accent);
+        _showSnackBar('DÃ­vida $label!', AppColors.accent);
       }
     } catch (e) {
       _showSnackBar('Erro: $e', AppColors.danger);
@@ -135,10 +133,10 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
   Future<void> _reactivate() async {
     setState(() => _isSaving = true);
     try {
-      await _debtRef().update({'status': 'active'});
+      await _debtService.updateDebt(widget.debtId, {'status': 'active'});
       await _loadDebt();
       if (mounted) {
-        _showSnackBar('Dívida reativada!', AppColors.accent);
+        _showSnackBar('DÃ­vida reativada!', AppColors.accent);
       }
     } catch (e) {
       _showSnackBar('Erro: $e', AppColors.danger);
@@ -154,12 +152,11 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
-          'Excluir dívida',
+          'Excluir dÃ­vida',
           style: TextStyle(color: AppColors.textPrimary),
         ),
         content: Text(
-          'Tem certeza que deseja excluir a dívida com '
-          '"${_debt?.creditor}"? Esta ação não pode ser desfeita.',
+          'Tem certeza que deseja excluir a dÃ­vida com "${_debt?.creditor}"? Esta aÃ§Ã£o nÃ£o pode ser desfeita.',
           style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
@@ -185,9 +182,9 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
 
     setState(() => _isSaving = true);
     try {
-      await _debtRef().delete();
+      await _debtService.deleteDebt(widget.debtId);
       if (mounted) {
-        _showSnackBar('Dívida excluída.', AppColors.textSecondary);
+        _showSnackBar('DÃ­vida excluÃ­da.', AppColors.textSecondary);
         context.pop();
       }
     } catch (e) {
@@ -197,17 +194,15 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
   }
 
   Future<void> _saveEdits() async {
-    final amount = double.tryParse(
-      _amountController.text.replaceAll(',', '.'),
-    );
-    final rate = double.tryParse(
-      _rateController.text.replaceAll(',', '.'),
-    );
+    final creditor = _creditorController.text.trim();
+    final amount = double.tryParse(_amountController.text.replaceAll(',', '.'));
+    final rate = double.tryParse(_rateController.text.replaceAll(',', '.'));
     final minPayment = double.tryParse(
       _minPaymentController.text.replaceAll(',', '.'),
     );
 
-    if (amount == null ||
+    if (creditor.isEmpty ||
+        amount == null ||
         rate == null ||
         minPayment == null ||
         _editDueDate == null) {
@@ -220,7 +215,8 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
 
     setState(() => _isSaving = true);
     try {
-      await _debtRef().update({
+      await _debtService.updateDebt(widget.debtId, {
+        'creditor': creditor,
         'amount': amount,
         'interestRate': rate,
         'minimumPayment': minPayment,
@@ -229,7 +225,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
       setState(() => _isEditMode = false);
       await _loadDebt();
       if (mounted) {
-        _showSnackBar('Dívida atualizada!', AppColors.accent);
+        _showSnackBar('DÃ­vida atualizada!', AppColors.accent);
       }
     } catch (e) {
       _showSnackBar('Erro ao salvar: $e', AppColors.danger);
@@ -280,8 +276,6 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
     );
   }
 
-  // ── Build ──────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -304,7 +298,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
         onPressed: () => context.pop(),
       ),
       title: const Text(
-        'Detalhes da Dívida',
+        'Detalhes da DÃ­vida',
         style: TextStyle(
           color: AppColors.textPrimary,
           fontSize: 18,
@@ -334,7 +328,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
               _populateControllers(_debt!);
               setState(() => _isEditMode = false);
             },
-            tooltip: 'Cancelar edição',
+            tooltip: 'Cancelar ediÃ§Ã£o',
           ),
       ],
     );
@@ -360,6 +354,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
           _buildWarnings(debt),
           _isEditMode
               ? DebtDetailEditCard(
+                  creditorController: _creditorController,
                   amountController: _amountController,
                   rateController: _rateController,
                   minPaymentController: _minPaymentController,
@@ -395,7 +390,7 @@ class _DebtDetailScreenState extends ConsumerState<DebtDetailScreen> {
         padding: EdgeInsets.only(bottom: 16),
         child: DebtWarningBanner(
           icon: Icons.warning_amber_rounded,
-          text: 'Esta dívida está vencida!',
+          text: 'Esta dÃ­vida estÃ¡ vencida!',
           color: AppColors.danger,
         ),
       );

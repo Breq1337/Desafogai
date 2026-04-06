@@ -204,7 +204,12 @@ class _ExpensesContent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      ...entry.value.map((expense) => _ExpenseRow(expense: expense)),
+                      ...entry.value.map(
+                        (expense) => _ExpenseRow(
+                          expense: expense,
+                          onTap: () => context.push('/dashboard/expenses/${expense.id}'),
+                        ),
+                      ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -318,9 +323,13 @@ class _FilterChip extends StatelessWidget {
 }
 
 class _ExpenseRow extends StatelessWidget {
-  const _ExpenseRow({required this.expense});
+  const _ExpenseRow({
+    required this.expense,
+    this.onTap,
+  });
 
   final Expense expense;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -328,72 +337,88 @@ class _ExpenseRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainer,
-                borderRadius: BorderRadius.circular(10),
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  _categoryIcon(expense.category),
+                  size: 18,
+                  color: AppColors.textSecondary,
+                ),
               ),
-              child: Icon(
-                _categoryIcon(expense.category),
-                size: 18,
-                color: AppColors.textSecondary,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      expense.note.isNotEmpty ? expense.note : expense.category,
+                      style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          expense.category,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.textTertiary,
+                            fontSize: 12,
+                          ),
+                        ),
+                        if (expense.source == 'telegram') ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF26A5E4).withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              'Telegram',
+                              style: TextStyle(fontSize: 9, color: Color(0xFF26A5E4), fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    expense.note.isNotEmpty ? expense.note : expense.category,
-                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    'R\$ ${expense.amount.toStringAsFixed(2)}',
+                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        expense.category,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.textTertiary,
-                          fontSize: 12,
-                        ),
-                      ),
-                      if (expense.source == 'telegram') ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF26A5E4).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'Telegram',
-                            style: TextStyle(fontSize: 9, color: Color(0xFF26A5E4), fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    ],
+                  const SizedBox(height: 2),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textTertiary,
+                    size: 16,
                   ),
                 ],
               ),
-            ),
-            Text(
-              'R\$ ${expense.amount.toStringAsFixed(2)}',
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

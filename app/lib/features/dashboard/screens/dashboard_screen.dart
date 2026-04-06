@@ -5,16 +5,14 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/alert_banner.dart';
-import '../../../core/widgets/premium_card.dart';
-import '../../../core/widgets/section_header.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../expenses/providers/budget_provider.dart';
 import '../../expenses/providers/expenses_provider.dart';
+import '../../expenses/models/budget_model.dart';
 import '../models/debt_model.dart';
 import '../providers/debts_provider.dart';
-import '../providers/income_provider.dart';
-import '../providers/insights_provider.dart';
-import '../services/insights_engine.dart';
+import '../providers/planning_provider.dart';
+import '../services/planning_service.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -22,24 +20,35 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider).valueOrNull;
-    final debtsAsync = ref.watch(debtsProvider);
-    final totalDebtAsync = ref.watch(totalDebtsProvider);
-    final expenseTotalAsync = ref.watch(monthlyExpenseTotalProvider);
-    final incomeAsync = ref.watch(monthlyIncomeProvider);
-    final textTheme = Theme.of(context).textTheme;
+    final debts = ref.watch(debtsProvider).valueOrNull ?? [];
+    final planning = ref.watch(planningSettingsProvider).valueOrNull;
+    final budgets = ref.watch(budgetsProvider).valueOrNull ?? {};
+    final monthlySpent = ref.watch(monthlyExpenseTotalProvider).valueOrNull ?? 0.0;
+    final byCategory = ref.watch(monthlyCategoryTotalsProvider).valueOrNull ?? {};
 
-    final insightsAsync = ref.watch(insightsProvider);
-
-    final debts = debtsAsync.valueOrNull ?? [];
-    final totalDebt = totalDebtAsync.valueOrNull ?? 0.0;
-    final monthExpenses = expenseTotalAsync.valueOrNull ?? 0.0;
-    final income = incomeAsync.valueOrNull ?? 0.0;
-    final insights = insightsAsync.valueOrNull ?? [];
+    final monthlyIncome = planning?.monthlyIncome ?? 0;
+    final savingsGoal = planning?.savingsGoal ?? 0;
+    final totalBudgeted = budgets.values.fold<double>(
+      0,
+      (sum, budget) => sum + budget.monthlyLimit,
+    );
+    final reservedForDebts = PlanningService.amountReservedForDebts(
+      monthlyIncome: monthlyIncome,
+      plannedCategoryBudget: totalBudgeted,
+      savingsGoal: savingsGoal,
+    );
+    final suggestedSavings = PlanningService.suggestedSavingsGoal(
+      debts: debts,
+      monthlyIncome: monthlyIncome,
+      plannedCategoryBudget: totalBudgeted,
+    );
 
     final greeting = _greeting();
     final firstName = (user?.displayName ?? '').split(' ').first;
+    final primaryDebt = _pickPrimaryDebt(debts);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -49,122 +58,151 @@ class DashboardScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Greeting
                     Text(
                       firstName.isNotEmpty ? '$greeting, $firstName' : greeting,
-                      style: textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       DateFormat("EEEE, dd 'de' MMMM", 'pt_BR').format(DateTime.now()),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Financial summary
-                    _FinancialSummary(
-                      totalDebt: totalDebt,
-                      monthExpenses: monthExpenses,
-                      income: income,
+                    const SizedBox(height: 20),
+                    _MonthPlanHero(
+                      monthlyIncome: monthlyIncome,
+                      totalBudgeted: totalBudgeted,
+                      monthlySpent: monthlySpent,
+                      savingsGoal: savingsGoal,
+                      reservedForDebts: reservedForDebts,
+                      suggestedSavings: suggestedSavings,
+                      onPlanMonth: () => context.push('/dashboard/expenses/budget'),
                     ),
                     const SizedBox(height: 16),
-
-                    // Priority alert
-                    if (debts.isNotEmpty) ...[
-                      _PriorityAlert(debts: debts),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // Smart insights
-                    if (insights.isNotEmpty) ...[
-                      ...insights.take(2).map((insight) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _InsightCard(insight: insight),
-                          )),
-                      const SizedBox(height: 16),
-                    ] else if (income > 0 && monthExpenses > 0) ...[
-                      _SmartRecommendation(
-                        income: income,
-                        expenses: monthExpenses,
-                        totalDebt: totalDebt,
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-
-                    // Quick actions
-                    const SectionHeader(title: 'Ações rápidas'),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _QuickAction(
-                            icon: Icons.add_rounded,
-                            label: 'Nova dívida',
-                            onTap: () => context.push('/dashboard/add-debt'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _QuickAction(
-                            icon: Icons.receipt_long_rounded,
-                            label: 'Novo gasto',
-                            onTap: () => context.push('/dashboard/expenses/add'),
-                          ),
-                        ),
-                      ],
+                    _ActionStrip(
+                      onPlan: () => context.push('/dashboard/expenses/budget'),
+                      onAddDebt: () => context.push('/dashboard/add-debt'),
+                      onAddExpense: () => context.push('/dashboard/expenses/add'),
                     ),
-
-                    if (debts.isNotEmpty) ...[
-                      const SizedBox(height: 24),
-                      SectionHeader(
-                        title: 'Dívidas prioritárias',
-                        trailing: TextButton(
-                          onPressed: () {},
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Ver todas',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: AppColors.primaryContainer,
-                            ),
-                          ),
-                        ),
+                    const SizedBox(height: 24),
+                    if (primaryDebt != null) ...[
+                      _FocusCard(
+                        debt: primaryDebt,
+                        onTap: () => context.push('/dashboard/debt/${primaryDebt.id}'),
                       ),
+                      const SizedBox(height: 24),
                     ],
+                    Text(
+                      'Categorias do mês',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Veja rapidamente onde o orçamento já está apertando.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+                    const SizedBox(height: 14),
                   ],
                 ),
               ),
             ),
-
-            // Top 3 debts
-            if (debts.isNotEmpty)
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final debt = debts[index];
-                      return _CompactDebtRow(
-                        debt: debt,
-                        onTap: () => context.push('/dashboard/debt/${debt.id}'),
-                      );
-                    },
-                    childCount: debts.length.clamp(0, 3),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  _buildCategoryRows(
+                    context: context,
+                    budgets: budgets,
+                    byCategory: byCategory,
                   ),
                 ),
               ),
-
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildCategoryRows({
+    required BuildContext context,
+    required Map<String, CategoryBudget> budgets,
+    required Map<String, double> byCategory,
+  }) {
+    final categoryNames = byCategory.keys.isNotEmpty
+        ? byCategory.keys.toList()
+        : budgets.keys.cast<String>().toList();
+
+    if (categoryNames.isEmpty) {
+      return [
+        Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.35)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Nenhum orçamento definido ainda.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Monte seu plano do mês para acompanhar alimentação, transporte, lazer e outras categorias.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    final ordered = categoryNames.toSet().toList()
+      ..sort((a, b) {
+        final aLimit = budgets[a]?.monthlyLimit ?? 0;
+        final bLimit = budgets[b]?.monthlyLimit ?? 0;
+        final aSpent = byCategory[a] ?? 0;
+        final bSpent = byCategory[b] ?? 0;
+        final aUsage = aLimit > 0 ? aSpent / aLimit : 0;
+        final bUsage = bLimit > 0 ? bSpent / bLimit : 0;
+        return bUsage.compareTo(aUsage);
+      });
+
+    return ordered.take(4).map((category) {
+      final limit = budgets[category]?.monthlyLimit ?? 0;
+      final spent = byCategory[category] ?? 0;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: _CategoryStatusCard(
+          category: category,
+          spent: spent,
+          limit: limit,
+        ),
+      );
+    }).toList();
+  }
+
+  Debt? _pickPrimaryDebt(List<Debt> debts) {
+    if (debts.isEmpty) return null;
+    final ordered = List<Debt>.from(debts)
+      ..sort((a, b) => b.urgencyScore.compareTo(a.urgencyScore));
+    return ordered.first;
   }
 
   String _greeting() {
@@ -175,68 +213,84 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _FinancialSummary extends StatelessWidget {
-  const _FinancialSummary({
-    required this.totalDebt,
-    required this.monthExpenses,
-    required this.income,
+class _MonthPlanHero extends StatelessWidget {
+  const _MonthPlanHero({
+    required this.monthlyIncome,
+    required this.totalBudgeted,
+    required this.monthlySpent,
+    required this.savingsGoal,
+    required this.reservedForDebts,
+    required this.suggestedSavings,
+    required this.onPlanMonth,
   });
 
-  final double totalDebt;
-  final double monthExpenses;
-  final double income;
+  final double monthlyIncome;
+  final double totalBudgeted;
+  final double monthlySpent;
+  final double savingsGoal;
+  final double reservedForDebts;
+  final double suggestedSavings;
+  final VoidCallback onPlanMonth;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final available = income - monthExpenses;
+    final hasPlan = monthlyIncome > 0 || totalBudgeted > 0 || savingsGoal > 0;
 
-    return PremiumCard(
-      padding: AppSpacing.cardPaddingLarge,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.35)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Resumo do mês',
-            style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+            'Plano do mês',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
-          const SizedBox(height: 14),
-          Row(
+          const SizedBox(height: 8),
+          Text(
+            hasPlan
+                ? 'Seu mês está organizado em três blocos: categorias, economia e dívida.'
+                : 'Comece definindo renda, limites por categoria e meta de economia.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
             children: [
-              Expanded(
-                child: _SummaryItem(
-                  label: 'Dívida total',
-                  value: 'R\$ ${totalDebt.toStringAsFixed(0)}',
-                  color: totalDebt > 0 ? AppColors.danger : AppColors.success,
-                ),
+              _HeroStat(label: 'Renda', value: monthlyIncome),
+              _HeroStat(label: 'Orçado', value: totalBudgeted),
+              _HeroStat(label: 'Gasto atual', value: monthlySpent),
+              _HeroStat(
+                label: 'Economizar',
+                value: savingsGoal > 0 ? savingsGoal : suggestedSavings,
+                isHint: savingsGoal <= 0,
               ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.outlineVariant.withValues(alpha: 0.3),
+              _HeroStat(
+                label: 'Livre p/ dívidas',
+                value: reservedForDebts,
+                highlight: true,
               ),
-              Expanded(
-                child: _SummaryItem(
-                  label: 'Gastos do mês',
-                  value: 'R\$ ${monthExpenses.toStringAsFixed(0)}',
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              if (income > 0) ...[
-                Container(
-                  width: 1,
-                  height: 40,
-                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
-                ),
-                Expanded(
-                  child: _SummaryItem(
-                    label: 'Disponível',
-                    value: 'R\$ ${available.toStringAsFixed(0)}',
-                    color: available >= 0 ? AppColors.success : AppColors.danger,
-                  ),
-                ),
-              ],
             ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onPlanMonth,
+              icon: const Icon(Icons.calendar_month_outlined, size: 18),
+              label: const Text('Organizar plano do mês'),
+            ),
           ),
         ],
       ),
@@ -244,35 +298,42 @@ class _FinancialSummary extends StatelessWidget {
   }
 }
 
-class _SummaryItem extends StatelessWidget {
-  const _SummaryItem({
-    required this.label,
-    required this.value,
-    required this.color,
+class _ActionStrip extends StatelessWidget {
+  const _ActionStrip({
+    required this.onPlan,
+    required this.onAddDebt,
+    required this.onAddExpense,
   });
 
-  final String label;
-  final String value;
-  final Color color;
+  final VoidCallback onPlan;
+  final VoidCallback onAddDebt;
+  final VoidCallback onAddExpense;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Column(
+    return Row(
       children: [
-        Text(
-          label,
-          style: textTheme.bodySmall?.copyWith(
-            color: AppColors.textTertiary,
-            fontSize: 11,
+        Expanded(
+          child: _ActionButton(
+            label: 'Planejar',
+            icon: Icons.tune_rounded,
+            onTap: onPlan,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: color,
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionButton(
+            label: 'Dívida',
+            icon: Icons.add_card_rounded,
+            onTap: onAddDebt,
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionButton(
+            label: 'Gasto',
+            icon: Icons.receipt_long_rounded,
+            onTap: onAddExpense,
           ),
         ),
       ],
@@ -280,148 +341,173 @@ class _SummaryItem extends StatelessWidget {
   }
 }
 
-class _PriorityAlert extends StatelessWidget {
-  const _PriorityAlert({required this.debts});
-
-  final List<Debt> debts;
-
-  @override
-  Widget build(BuildContext context) {
-    final overdue = debts.where((d) => d.isOverdue).toList();
-    final dueSoon = debts.where((d) => d.isDueSoon && !d.isOverdue).toList();
-
-    if (overdue.isNotEmpty) {
-      final d = overdue.first;
-      return AlertBanner(
-        message: '${d.creditor} está atrasado. Pague o quanto antes para evitar juros extras.',
-        severity: AlertSeverity.danger,
-      );
-    }
-
-    if (dueSoon.isNotEmpty) {
-      final d = dueSoon.first;
-      final days = d.dueDate.difference(DateTime.now()).inDays;
-      return AlertBanner(
-        message: '${d.creditor} vence em $days dia${days != 1 ? 's' : ''}. Parcela de R\$ ${d.minimumPayment.toStringAsFixed(0)}.',
-        severity: AlertSeverity.warning,
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-}
-
-class _InsightCard extends StatelessWidget {
-  const _InsightCard({required this.insight});
-
-  final Insight insight;
-
-  IconData get _icon => switch (insight.type) {
-        InsightType.budgetAlert => Icons.warning_amber_rounded,
-        InsightType.savingTip => Icons.lightbulb_outline_rounded,
-        InsightType.debtAcceleration => Icons.speed_rounded,
-        InsightType.spending => Icons.trending_up_rounded,
-      };
-
-  Color get _color => switch (insight.type) {
-        InsightType.budgetAlert => AppColors.warning,
-        InsightType.savingTip => AppColors.primaryContainer,
-        InsightType.debtAcceleration => AppColors.success,
-        InsightType.spending => AppColors.accent,
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: _color.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: _color.withValues(alpha: 0.12)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(_icon, color: _color, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              insight.message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: _color,
-                    height: 1.4,
-                  ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SmartRecommendation extends StatelessWidget {
-  const _SmartRecommendation({
-    required this.income,
-    required this.expenses,
-    required this.totalDebt,
-  });
-
-  final double income;
-  final double expenses;
-  final double totalDebt;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final ratio = expenses / income;
-
-    String message;
-    if (ratio > 0.9) {
-      message = 'Seus gastos estão muito próximos da renda. Tente reduzir para liberar pelo menos 10% para dívidas.';
-    } else if (ratio > 0.7) {
-      final available = income - expenses;
-      message = 'Você tem R\$ ${available.toStringAsFixed(0)} disponíveis. Direcionar esse valor para dívidas pode encurtar o prazo.';
-    } else {
-      final available = income - expenses;
-      message = 'Boa margem este mês. Com R\$ ${available.toStringAsFixed(0)} livres, você pode acelerar o pagamento das suas dívidas.';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.primaryContainer.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.primaryContainer.withValues(alpha: 0.12)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.lightbulb_outline_rounded, color: AppColors.primaryContainer, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.primaryContainer,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  const _QuickAction({
-    required this.icon,
-    required this.label,
+class _FocusCard extends StatelessWidget {
+  const _FocusCard({
+    required this.debt,
     required this.onTap,
   });
 
-  final IconData icon;
+  final Debt debt;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = debt.isOverdue
+        ? AppColors.danger
+        : debt.isDueSoon
+            ? AppColors.warning
+            : AppColors.primary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: statusColor.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 10,
+              height: 56,
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Foco de hoje',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    debt.creditor,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Vence ${DateFormat('dd/MM').format(debt.dueDate)} • mínimo R\$ ${debt.minimumPayment.toStringAsFixed(0)}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'R\$ ${debt.amount.toStringAsFixed(0)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryStatusCard extends StatelessWidget {
+  const _CategoryStatusCard({
+    required this.category,
+    required this.spent,
+    required this.limit,
+  });
+
+  final String category;
+  final double spent;
+  final double limit;
+
+  @override
+  Widget build(BuildContext context) {
+    final usage = limit > 0 ? (spent / limit).clamp(0.0, 1.0) : 0.0;
+    final accent = limit == 0
+        ? AppColors.textTertiary
+        : usage >= 1
+            ? AppColors.danger
+            : usage >= 0.85
+                ? AppColors.warning
+                : AppColors.primary;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                category,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              Text(
+                'R\$ ${spent.toStringAsFixed(0)}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (limit > 0) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: usage,
+                minHeight: 7,
+                backgroundColor: AppColors.surfaceContainerLow,
+                valueColor: AlwaysStoppedAnimation<Color>(accent),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Limite R\$ ${limit.toStringAsFixed(0)} • ${(usage * 100).toStringAsFixed(0)}%',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: accent,
+                  ),
+            ),
+          ] else
+            Text(
+              'Sem limite definido.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
   final String label;
+  final IconData icon;
   final VoidCallback onTap;
 
   @override
@@ -433,18 +519,17 @@ class _QuickAction extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.4)),
+          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.35)),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
           children: [
-            Icon(icon, size: 18, color: AppColors.primaryContainer),
-            const SizedBox(width: 8),
+            Icon(icon, size: 18, color: AppColors.primary),
+            const SizedBox(height: 6),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -455,71 +540,60 @@ class _QuickAction extends StatelessWidget {
   }
 }
 
-class _CompactDebtRow extends StatelessWidget {
-  const _CompactDebtRow({required this.debt, this.onTap});
+class _HeroStat extends StatelessWidget {
+  const _HeroStat({
+    required this.label,
+    required this.value,
+    this.highlight = false,
+    this.isHint = false,
+  });
 
-  final Debt debt;
-  final VoidCallback? onTap;
+  final String label;
+  final double value;
+  final bool highlight;
+  final bool isHint;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final statusColor = debt.isOverdue
-        ? AppColors.danger
-        : debt.isDueSoon
-            ? AppColors.warning
-            : AppColors.textTertiary;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.4)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 4,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: statusColor,
-                  borderRadius: BorderRadius.circular(2),
+    return Container(
+      width: 142,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: highlight
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 11,
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      debt.creditor,
-                      style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      'Vence ${DateFormat('dd/MM').format(debt.dueDate)}',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                'R\$ ${debt.amount.toStringAsFixed(0)}',
-                style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.chevron_right_rounded, size: 16, color: AppColors.textTertiary),
-            ],
           ),
-        ),
+          const SizedBox(height: 6),
+          Text(
+            'R\$ ${value.toStringAsFixed(0)}',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: highlight ? AppColors.primary : AppColors.textPrimary,
+                ),
+          ),
+          if (isHint)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'sugestão',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.primary,
+                      fontSize: 10,
+                    ),
+              ),
+            ),
+        ],
       ),
     );
   }

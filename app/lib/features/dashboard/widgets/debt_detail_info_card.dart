@@ -110,6 +110,7 @@ class _DetailRow extends StatelessWidget {
 class DebtDetailEditCard extends StatelessWidget {
   const DebtDetailEditCard({
     super.key,
+    required this.creditorController,
     required this.amountController,
     required this.rateController,
     required this.minPaymentController,
@@ -117,6 +118,7 @@ class DebtDetailEditCard extends StatelessWidget {
     required this.onPickDate,
   });
 
+  final TextEditingController creditorController;
   final TextEditingController amountController;
   final TextEditingController rateController;
   final TextEditingController minPaymentController;
@@ -148,6 +150,12 @@ class DebtDetailEditCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          _buildField(
+            controller: creditorController,
+            label: 'Credor',
+            icon: Icons.business_rounded,
+          ),
+          const SizedBox(height: 14),
           _buildField(
             controller: amountController,
             label: 'Valor (R\$)',

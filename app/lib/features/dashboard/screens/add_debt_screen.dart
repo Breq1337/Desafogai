@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import '../providers/ai_chat_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/voice_input_button.dart';
 import '../models/debt_model.dart';
+import '../services/debt_service.dart';
 import '../services/voice_debt_extractor.dart';
 
 class AddDebtScreen extends ConsumerStatefulWidget {
@@ -32,6 +32,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
   bool _extracting = false;
   String? _error;
   bool _submitted = false;
+  final _debtService = DebtService();
 
   String _normalizeDecimal(String text) => text.replaceAll(',', '.');
 
@@ -241,11 +242,7 @@ class _AddDebtScreenState extends ConsumerState<AddDebtScreen> {
         createdAt: DateTime.now(),
       );
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('debts')
-          .add(debt.toFirestore());
+      await _debtService.createDebt(debt);
 
       if (mounted) {
         context.pop();

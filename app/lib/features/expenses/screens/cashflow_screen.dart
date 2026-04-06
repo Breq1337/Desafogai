@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_animations.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/stitch_background.dart';
 import '../../dashboard/providers/debts_provider.dart';
 import '../../dashboard/providers/income_provider.dart';
@@ -17,7 +16,7 @@ class CashflowScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final incomeAsync = ref.watch(monthlyIncomeProvider);
+    final income = ref.watch(monthlyIncomeProvider);
     final expensesAsync = ref.watch(monthlyExpenseTotalProvider);
     final debtsAsync = ref.watch(debtsProvider);
 
@@ -58,29 +57,16 @@ class CashflowScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Income
                 FadeSlideIn(
                   index: 1,
-                  child: incomeAsync.when(
-                    data: (income) => StatCard(
-                      title: 'Renda mensal',
-                      value: 'R\$ ${income.toStringAsFixed(0)}',
-                      icon: Icons.trending_up_rounded,
-                      color: AppColors.primary,
-                    ),
-                    loading: () => StatCard(
-                      title: 'Renda mensal',
-                      value: '---',
-                      icon: Icons.trending_up_rounded,
-                      color: AppColors.primary,
-                    ),
-                    error: (err, st) => const SizedBox.shrink(),
+                  child: StatCard(
+                    title: 'Renda mensal',
+                    value: 'R\$ ${income.toStringAsFixed(0)}',
+                    icon: Icons.trending_up_rounded,
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Expenses
                 FadeSlideIn(
                   index: 2,
                   child: expensesAsync.when(
@@ -100,15 +86,13 @@ class CashflowScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Minimum debt payments
                 FadeSlideIn(
                   index: 3,
                   child: debtsAsync.when(
                     data: (debts) {
                       final totalMinimum = debts.fold<double>(
                         0.0,
-                        (sum, debt) => sum + debt.minimumPayment,
+                        (total, debt) => total + debt.minimumPayment,
                       );
                       return StatCard(
                         title: 'Pagamentos mínimos',
@@ -127,19 +111,15 @@ class CashflowScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Divider
                 Container(
                   height: 1,
                   color: AppColors.divider.withValues(alpha: 0.3),
                 ),
                 const SizedBox(height: 24),
-
-                // Available balance
                 FadeSlideIn(
                   index: 4,
                   child: _CashflowSummary(
-                    incomeAsync: incomeAsync,
+                    income: income,
                     expensesAsync: expensesAsync,
                     debtsAsync: debtsAsync,
                   ),
@@ -153,47 +133,40 @@ class CashflowScreen extends ConsumerWidget {
   }
 }
 
-class _CashflowSummary extends ConsumerWidget {
+class _CashflowSummary extends StatelessWidget {
   const _CashflowSummary({
-    required this.incomeAsync,
+    required this.income,
     required this.expensesAsync,
     required this.debtsAsync,
   });
 
-  final AsyncValue<double> incomeAsync;
+  final double income;
   final AsyncValue<double> expensesAsync;
   final AsyncValue<List<dynamic>> debtsAsync;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return incomeAsync.when(
-      data: (income) => expensesAsync.when(
-        data: (expenses) => debtsAsync.when(
-          data: (debts) {
-            final totalMinimum =
-                debts.fold<double>(0.0, (sum, debt) => sum + debt.minimumPayment);
-            final available = income - expenses - totalMinimum;
-            final isPositive = available >= 0;
+  Widget build(BuildContext context) {
+    return expensesAsync.when(
+      data: (expenses) => debtsAsync.when(
+        data: (debts) {
+          final totalMinimum = debts.fold<double>(
+            0.0,
+            (total, debt) => total + debt.minimumPayment,
+          );
+          final available = income - expenses - totalMinimum;
+          final isPositive = available >= 0;
 
-            return StatCard(
-              title: 'Sobra real',
-              value: 'R\$ ${available.abs().toStringAsFixed(0)}',
-              icon: isPositive ? Icons.savings_rounded : Icons.warning_rounded,
-              color: isPositive ? const Color(0xFF4CAF50) : AppColors.danger,
-              subtitle: isPositive
-                  ? 'Você tem saldo positivo'
-                  : 'Atenção: déficit no mês',
-              numericValue: available,
-            );
-          },
-          loading: () => StatCard(
+          return StatCard(
             title: 'Sobra real',
-            value: '---',
-            icon: Icons.savings_rounded,
-            color: AppColors.primary,
-          ),
-          error: (err, st) => const SizedBox.shrink(),
-        ),
+            value: 'R\$ ${available.abs().toStringAsFixed(0)}',
+            icon: isPositive ? Icons.savings_rounded : Icons.warning_rounded,
+            color: isPositive ? const Color(0xFF4CAF50) : AppColors.danger,
+            subtitle: isPositive
+                ? 'Você tem saldo positivo'
+                : 'Atenção: déficit no mês',
+            numericValue: available,
+          );
+        },
         loading: () => StatCard(
           title: 'Sobra real',
           value: '---',
